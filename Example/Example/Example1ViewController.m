@@ -1,23 +1,23 @@
 //
-//  ViewController.m
+//  Example1ViewController.m
 //  Example
 //
 //  Created by Xezun on 2023/7/27.
 //
 
-#import "ViewController.h"
+#import "Example1ViewController.h"
 @import XZPageControl;
 @import XZPageView;
 @import SDWebImage;
 
-@interface ViewController () <XZPageViewDelegate, XZPageViewDataSource>
+@interface Example1ViewController () <XZPageViewDelegate, XZPageViewDataSource>
 @property (weak, nonatomic) IBOutlet XZPageView *pageView;
 @property (weak, nonatomic) IBOutlet XZPageControl *pageControl;
 
 @property (nonatomic, copy) NSArray *imageURLs;
 @end
 
-@implementation ViewController
+@implementation Example1ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -46,21 +46,16 @@
     [self.pageControl addTarget:self action:@selector(pageControlDidChangeValue:) forControlEvents:(UIControlEventValueChanged)];
 }
 
-- (IBAction)navBarAlignButton:(UIBarButtonItem *)sender {
-    switch (self.pageControl.contentMode) {
-        case UIViewContentModeLeft:
-            self.pageControl.contentMode = UIViewContentModeRight;
-            [sender setImage:[UIImage systemImageNamed:@"align.horizontal.right"]];
-            break;
-        case UIViewContentModeRight:
-            self.pageControl.contentMode = UIViewContentModeCenter;
-            [sender setImage:[UIImage systemImageNamed:@"align.horizontal.center"]];
-            break;
-        default:
-            self.pageControl.contentMode = UIViewContentModeLeft;
-            [sender setImage:[UIImage systemImageNamed:@"align.horizontal.left"]];
-            break;
-    }
+- (IBAction)alignLeftButtonAction:(id)sender {
+    self.pageControl.contentMode = UIViewContentModeLeft;
+}
+
+- (IBAction)alignCenterButtonAction:(id)sender {
+    self.pageControl.contentMode = UIViewContentModeCenter;
+}
+
+- (IBAction)alignRightButtonAction:(id)sender {
+    self.pageControl.contentMode = UIViewContentModeRight;
 }
 
 - (NSInteger)numberOfPagesInPageView:(XZPageView *)pageView {

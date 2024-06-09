@@ -558,9 +558,9 @@
     _needsUpdate = YES;
     
     typeof(self) __weak wself = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
+    [NSRunLoop.mainRunLoop performBlock:^{
         [wself updateIfNeeded];
-    });
+    }];
 }
 
 - (void)updateIfNeeded {
