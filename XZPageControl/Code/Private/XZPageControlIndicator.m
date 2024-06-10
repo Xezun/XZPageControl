@@ -131,7 +131,7 @@
     _needsUpdate = YES;
     
     typeof(self) __weak wself = self;
-    [NSRunLoop.mainRunLoop performBlock:^{
+    [NSRunLoop.mainRunLoop performInModes:@[NSRunLoopCommonModes] block:^{
         [wself updateIfNeeded];
     }];
 }
