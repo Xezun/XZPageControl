@@ -35,9 +35,8 @@
     
     self.pageControl.indicatorFillColor = UIColor.whiteColor;
     self.pageControl.indicatorStrokeColor = UIColor.whiteColor;
-    self.pageControl.currentIndicatorFillColor = [UIColor colorWithRed:0xbf/255.0 green:0x0f/255.0 blue:0x1f/255.0 alpha:1.0];
-    self.pageControl.currentIndicatorStrokeColor = [UIColor colorWithRed:0xbf/255.0 green:0x0f/255.0 blue:0x1f/255.0 alpha:1.0];
-    self.pageControl.currentIndicatorShape = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(8, 12.0, 14.0, 6.0) cornerRadius:3.0];
+    self.pageControl.currentIndicatorFillColor = UIColor.redColor;
+    self.pageControl.currentIndicatorStrokeColor = UIColor.redColor;
     
     self.pageView.delegate = self;
     self.pageView.dataSource = self;
@@ -46,21 +45,51 @@
     [self.pageControl addTarget:self action:@selector(pageControlDidChangeValue:) forControlEvents:(UIControlEventValueChanged)];
 }
 
-- (IBAction)navBarAlignButton:(UIBarButtonItem *)sender {
-    switch (self.pageControl.contentMode) {
-        case UIViewContentModeLeft:
-            self.pageControl.contentMode = UIViewContentModeRight;
-            [sender setImage:[UIImage systemImageNamed:@"align.horizontal.right"]];
-            break;
-        case UIViewContentModeRight:
-            self.pageControl.contentMode = UIViewContentModeCenter;
-            [sender setImage:[UIImage systemImageNamed:@"align.horizontal.center"]];
-            break;
-        default:
-            self.pageControl.contentMode = UIViewContentModeLeft;
-            [sender setImage:[UIImage systemImageNamed:@"align.horizontal.left"]];
-            break;
-    }
+- (IBAction)alignLeftButtonAction:(id)sender {
+    self.pageControl.contentMode = UIViewContentModeLeft;
+}
+
+- (IBAction)alignCenterButtonAction:(id)sender {
+    self.pageControl.contentMode = UIViewContentModeCenter;
+}
+
+- (IBAction)alignRightButtonAction:(id)sender {
+    self.pageControl.contentMode = UIViewContentModeRight;
+}
+
+- (IBAction)defautStyleButtonAction:(id)sender {
+    _pageControl.indicatorImage = nil;
+    _pageControl.currentIndicatorImage = nil;
+    _pageControl.indicatorShape = nil;
+    _pageControl.currentIndicatorShape = nil;
+}
+
+- (IBAction)shapStyleButtonAction:(id)sender {
+    _pageControl.indicatorImage            = nil;
+    _pageControl.currentIndicatorImage     = nil;
+    
+    UIBezierPath *path = [[UIBezierPath alloc] init];
+    [path moveToPoint:CGPointMake(0.0, 0)];
+    [path addLineToPoint:CGPointMake(6.0, 0)];
+    [path addLineToPoint:CGPointMake(3.0, 6.0)];
+    [path closePath];
+    _pageControl.indicatorShape = path;
+    
+    path = [[UIBezierPath alloc] init];
+    [path moveToPoint:CGPointMake(3.0, 0)];
+    [path addLineToPoint:CGPointMake(6.0, 6.0)];
+    [path addLineToPoint:CGPointMake(0, 6.0)];
+    [path closePath];
+    _pageControl.currentIndicatorShape = path;
+}
+
+- (IBAction)imageStyleButtonAction:(id)sender {
+    _pageControl.indicatorImage        = [UIImage imageNamed:@"icon-star"];
+    _pageControl.currentIndicatorImage = [UIImage imageNamed:@"icon-star-selected"];
+}
+
+- (IBAction)spacingSliderValueChanged:(UISlider *)sender {
+    _pageControl.maximumIndicatorSpacing = sender.value;
 }
 
 - (NSInteger)numberOfPagesInPageView:(XZPageView *)pageView {

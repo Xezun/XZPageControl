@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'XZPageControl'
-  s.version          = '1.1.0'
-  s.summary          = 'iOS分页控制组件'
+  s.version          = '1.2.0'
+  s.summary          = '一款支持自由定制外观的、类似于 UIPageControl 的视图控件。'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,8 +18,10 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-                       组件 XZPageControl 支持自定义样式，方便快速开发出业务所需的指示器样式。
-                       DESC
+  相比于原生控件 UIPageControl 而言， XZPageControl 提供了更方便的指示器样式设置方式，
+  比如可以直接设置指示器的颜色、形状，或者将图片作为指示器，或者将自定义控件作为指示器，
+  并且每一个指示器还支持单独设置样式。
+  DESC
 
   s.homepage         = 'https://github.com/Xezun/XZPageControl'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
@@ -34,7 +36,7 @@ Pod::Spec.new do |s|
   s.subspec 'Code' do |ss|
     ss.dependency 'XZShapeView'
     ss.source_files = 'XZPageControl/Code/**/*.{h,m}'
-    # ss.project_header_files = 'XZPageControl/Code/**/Private/*.{h,m}'
+    ss.project_header_files = 'XZPageControl/Code/**/Private/*.h'
   end
   
   # s.resource_bundles = {
