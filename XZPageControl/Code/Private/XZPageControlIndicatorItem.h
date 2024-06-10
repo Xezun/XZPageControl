@@ -1,0 +1,29 @@
+//
+//  XZPageControlIndicatorItem.h
+//  XZPageControl
+//
+//  Created by Xezun on 2024/6/10.
+//
+
+#import <UIKit/UIKit.h>
+#import <XZPageControl/XZPageControlDefines.h>
+#import <XZPageControl/XZPageControlAttributes.h>
+
+@class XZPageControl;
+
+NS_ASSUME_NONNULL_BEGIN
+
+/// 在视图创建或设置之前，对象 Item 负责记录对 XZPageControl 的样式设置，
+/// 并在需要创建视图，或者被赋值视图时，将这些值传递给视图渲染，这样就不需要
+/// 实时的创建视图，而是仅在必要的时候创建即可。
+@interface XZPageControlIndicatorItem : NSObject <XZPageControlIndicator>
+/// 设置 frame 会懒加载指示器视图。
+@property (nonatomic) CGRect frame;
+@property (nonatomic, setter=setCurrent:) BOOL isCurrent;
+/// XZPageControl 应避免操作此视图。
+@property (nonatomic, strong) UIView<XZPageControlIndicator> *view;
+@property (nonatomic, strong, readonly) XZPageControlAttributes *attributes;
++ (XZPageControlIndicatorItem *)itemForPageControl:(XZPageControl *)pageControl attributes:(XZPageControlAttributes *)attributes;
+@end
+
+NS_ASSUME_NONNULL_END

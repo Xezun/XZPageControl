@@ -94,17 +94,22 @@
                                 </constraints>
                                 <edgeInsets key="layoutMargins" top="0.0" left="0.0" bottom="0.0" right="0.0"/>
                             </view>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="对齐方式" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cjT-Oe-o2s">
-                                <rect key="frame" x="40" y="310.33333333333331" width="303" height="20.333333333333314"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="对齐方式：" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cjT-Oe-o2s">
+                                <rect key="frame" x="0.0" y="310.33333333333331" width="120" height="50"/>
+                                <color key="backgroundColor" systemColor="systemGray6Color"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="120" id="Ima-DT-BUi"/>
+                                    <constraint firstAttribute="height" constant="50" id="X2w-cm-4Xx"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qI8-H7-vGu">
-                                <rect key="frame" x="20" y="350.66666666666669" width="353" height="50"/>
+                                <rect key="frame" x="120" y="310.33333333333331" width="273" height="50"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5z3-3O-Ota">
-                                        <rect key="frame" x="0.0" y="0.0" width="117.66666666666667" height="50"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="91" height="50"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" image="align.horizontal.left" catalog="system"/>
                                         <connections>
@@ -112,7 +117,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tSc-P7-9Nn">
-                                        <rect key="frame" x="117.66666666666666" y="0.0" width="117.66666666666666" height="50"/>
+                                        <rect key="frame" x="91" y="0.0" width="91" height="50"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" image="align.horizontal.center" catalog="system"/>
                                         <connections>
@@ -120,7 +125,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2PQ-Yz-JHe">
-                                        <rect key="frame" x="235.33333333333334" y="0.0" width="117.66666666666666" height="50"/>
+                                        <rect key="frame" x="182" y="0.0" width="91" height="50"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" image="align.horizontal.right" catalog="system"/>
                                         <connections>
@@ -128,6 +133,7 @@
                                         </connections>
                                     </button>
                                 </subviews>
+                                <color key="backgroundColor" systemColor="systemGray6Color"/>
                                 <constraints>
                                     <constraint firstItem="2PQ-Yz-JHe" firstAttribute="width" secondItem="5z3-3O-Ota" secondAttribute="width" id="CU2-pO-fJx"/>
                                     <constraint firstAttribute="height" constant="50" id="i3h-k6-7cC"/>
@@ -138,17 +144,16 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="qI8-H7-vGu" secondAttribute="trailing" constant="20" id="6QH-9a-nUq"/>
-                            <constraint firstItem="qI8-H7-vGu" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="6lf-Rh-L7S"/>
                             <constraint firstItem="Vn1-z7-oGe" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Ba7-m6-myj"/>
                             <constraint firstItem="2NJ-ri-7ll" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="Bz8-rP-3NC"/>
                             <constraint firstItem="cjT-Oe-o2s" firstAttribute="top" secondItem="Vn1-z7-oGe" secondAttribute="bottom" constant="50" id="Cvd-pc-oY4"/>
                             <constraint firstItem="Vn1-z7-oGe" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="Qmk-qv-0Z3"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="cjT-Oe-o2s" secondAttribute="trailing" constant="50" id="XR2-T2-XuS"/>
                             <constraint firstItem="2NJ-ri-7ll" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="eIV-60-aTo"/>
-                            <constraint firstItem="qI8-H7-vGu" firstAttribute="top" secondItem="cjT-Oe-o2s" secondAttribute="bottom" constant="20" id="oGT-PU-WnD"/>
+                            <constraint firstItem="qI8-H7-vGu" firstAttribute="top" secondItem="Vn1-z7-oGe" secondAttribute="bottom" constant="50" id="fFz-Wp-zMc"/>
+                            <constraint firstItem="qI8-H7-vGu" firstAttribute="leading" secondItem="cjT-Oe-o2s" secondAttribute="trailing" id="g2g-Fn-yEO"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="qI8-H7-vGu" secondAttribute="trailing" id="jKw-X9-9Es"/>
                             <constraint firstItem="Vn1-z7-oGe" firstAttribute="bottom" secondItem="2NJ-ri-7ll" secondAttribute="bottom" id="pKR-AZ-JJf"/>
-                            <constraint firstItem="cjT-Oe-o2s" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="40" id="tiJ-5D-q0R"/>
+                            <constraint firstItem="cjT-Oe-o2s" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="tiJ-5D-q0R"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="2NJ-ri-7ll" secondAttribute="trailing" id="vt0-em-sQe"/>
                         </constraints>
                     </view>

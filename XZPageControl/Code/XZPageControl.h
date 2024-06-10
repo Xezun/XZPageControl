@@ -6,10 +6,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <XZPageControl/XZPageControlDefines.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-@protocol XZPageControlIndicator;
 
 /// 翻页指示控件。
 @interface XZPageControl : UIControl
@@ -86,23 +85,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIView<XZPageControlIndicator> *)indicatorForPage:(NSInteger)page;
 - (void)setIndicator:(nullable UIView<XZPageControlIndicator> *)indicator forPage:(NSInteger)page;
 
-@end
-
-/// 自定义指示器需要实现的协议。
-@protocol XZPageControlIndicator <NSObject>
-@property (nonatomic, setter=setCurrent:) BOOL isCurrent;
-@optional
-@property (nonatomic, strong, nullable) UIColor *strokeColor;
-@property (nonatomic, strong, nullable) UIColor *currentStrokeColor;
-
-@property (nonatomic, strong, nullable) UIColor *fillColor;
-@property (nonatomic, strong, nullable) UIColor *currentFillColor;
-
-@property (nonatomic, copy, nullable) UIBezierPath *shape;
-@property (nonatomic, copy, nullable) UIBezierPath *currentShape;
-
-@property (nonatomic, strong, nullable) UIImage *image;
-@property (nonatomic, strong, nullable) UIImage *currentImage;
 @end
 
 NS_ASSUME_NONNULL_END
