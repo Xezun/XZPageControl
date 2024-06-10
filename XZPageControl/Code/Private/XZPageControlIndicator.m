@@ -162,7 +162,7 @@
     
     if (_imageView == nil) {
         _imageView = [[UIImageView alloc] initWithFrame:self.bounds];
-        _imageView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleBottomMargin;
+        _imageView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin;
         [self addSubview:_imageView];
     } else {
         _imageView.hidden = NO;
@@ -178,7 +178,7 @@
     
     if (_shapeView == nil) {
         _shapeView = [[XZShapeView alloc] initWithFrame:self.bounds];
-        _shapeView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleBottomMargin;
+        _shapeView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin;
         [self addSubview:_shapeView];
     } else {
         _shapeView.hidden = NO;
