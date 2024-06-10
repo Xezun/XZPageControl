@@ -21,8 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL hidesForSinglePage;
 
 /// 指示器中心点之间的最大距离，默认 30 点。
-/// @note 如果指示器视图不够宽或者此属性值不够大，指示器之间可能会发生重叠。
-/// @note 在允许的情况下，可通过 layoutMargins 属性限制可放置指示器的区域。
+/// @discussion 如果此值足够大，指示器最多会平分整个视图宽度，此值将约束指示器之间的最大距离。
+/// @discussion 如果指示器视图不够宽或者此属性值不够大，指示器之间可能会发生重叠。
+/// @discussion 在允许的情况下，可通过 layoutMargins 属性限制可放置指示器的区域。
 @property (nonatomic) CGFloat maximumIndicatorSpacing;
 
 /// 指示器排列方式。
