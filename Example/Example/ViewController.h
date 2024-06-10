@@ -1,5 +1,5 @@
 //
-//  Example1ViewController.h
+//  ViewController.h
 //  Example
 //
 //  Created by Xezun on 2023/7/27.
@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface Example1ViewController : UIViewController
+@interface ViewController : UIViewController
 
 
 @end

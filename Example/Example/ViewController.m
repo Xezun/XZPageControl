@@ -1,23 +1,23 @@
 //
-//  Example1ViewController.m
+//  ViewController.m
 //  Example
 //
 //  Created by Xezun on 2023/7/27.
 //
 
-#import "Example1ViewController.h"
+#import "ViewController.h"
 @import XZPageControl;
 @import XZPageView;
 @import SDWebImage;
 
-@interface Example1ViewController () <XZPageViewDelegate, XZPageViewDataSource>
+@interface ViewController () <XZPageViewDelegate, XZPageViewDataSource>
 @property (weak, nonatomic) IBOutlet XZPageView *pageView;
 @property (weak, nonatomic) IBOutlet XZPageControl *pageControl;
 
 @property (nonatomic, copy) NSArray *imageURLs;
 @end
 
-@implementation Example1ViewController
+@implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -35,9 +35,8 @@
     
     self.pageControl.indicatorFillColor = UIColor.whiteColor;
     self.pageControl.indicatorStrokeColor = UIColor.whiteColor;
-    self.pageControl.currentIndicatorFillColor = [UIColor colorWithRed:0xbf/255.0 green:0x0f/255.0 blue:0x1f/255.0 alpha:1.0];
-    self.pageControl.currentIndicatorStrokeColor = [UIColor colorWithRed:0xbf/255.0 green:0x0f/255.0 blue:0x1f/255.0 alpha:1.0];
-    self.pageControl.currentIndicatorShape = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(8, 12.0, 14.0, 6.0) cornerRadius:3.0];
+    self.pageControl.currentIndicatorFillColor = UIColor.redColor;
+    self.pageControl.currentIndicatorStrokeColor = UIColor.redColor;
     
     self.pageView.delegate = self;
     self.pageView.dataSource = self;
@@ -56,6 +55,41 @@
 
 - (IBAction)alignRightButtonAction:(id)sender {
     self.pageControl.contentMode = UIViewContentModeRight;
+}
+
+- (IBAction)defautStyleButtonAction:(id)sender {
+    _pageControl.indicatorImage = nil;
+    _pageControl.currentIndicatorImage = nil;
+    _pageControl.indicatorShape = nil;
+    _pageControl.currentIndicatorShape = nil;
+}
+
+- (IBAction)shapStyleButtonAction:(id)sender {
+    _pageControl.indicatorImage            = nil;
+    _pageControl.currentIndicatorImage     = nil;
+    
+    UIBezierPath *path = [[UIBezierPath alloc] init];
+    [path moveToPoint:CGPointMake(0.0, 0)];
+    [path addLineToPoint:CGPointMake(6.0, 0)];
+    [path addLineToPoint:CGPointMake(3.0, 6.0)];
+    [path closePath];
+    _pageControl.indicatorShape = path;
+    
+    path = [[UIBezierPath alloc] init];
+    [path moveToPoint:CGPointMake(3.0, 0)];
+    [path addLineToPoint:CGPointMake(6.0, 6.0)];
+    [path addLineToPoint:CGPointMake(0, 6.0)];
+    [path closePath];
+    _pageControl.currentIndicatorShape = path;
+}
+
+- (IBAction)imageStyleButtonAction:(id)sender {
+    _pageControl.indicatorImage        = [UIImage imageNamed:@"icon-star"];
+    _pageControl.currentIndicatorImage = [UIImage imageNamed:@"icon-star-selected"];
+}
+
+- (IBAction)spacingSliderValueChanged:(UISlider *)sender {
+    _pageControl.maximumIndicatorSpacing = sender.value;
 }
 
 - (NSInteger)numberOfPagesInPageView:(XZPageView *)pageView {
