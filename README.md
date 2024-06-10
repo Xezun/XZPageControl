@@ -1,13 +1,12 @@
 # XZPageControl
 
-[![CI Status](https://img.shields.io/travis/xezun/XZPageControl.svg?style=flat)](https://travis-ci.org/xezun/XZPageControl)
 [![Version](https://img.shields.io/cocoapods/v/XZPageControl.svg?style=flat)](https://cocoapods.org/pods/XZPageControl)
 [![License](https://img.shields.io/cocoapods/l/XZPageControl.svg?style=flat)](https://cocoapods.org/pods/XZPageControl)
 [![Platform](https://img.shields.io/cocoapods/p/XZPageControl.svg?style=flat)](https://cocoapods.org/pods/XZPageControl)
 
 ## 示例
 
-运行示例项目，请在拉取代码后，先在 Pods 目录执行`pod install`命令。
+运行示例项目，请在拉取代码后，先在 Pods 目录执行 `pod install` 命令。
 
 To run the example project, clone the repo, and run `pod install` from the Pods directory first.
 
@@ -17,7 +16,7 @@ iOS 11.0, Xcode 14.0
 
 ## Installation
 
-XZPageControl is available through [CocoaPods](https://cocoapods.org). To install it, simply add the following line to your Podfile:
+`XZPageControl` is available through [CocoaPods](https://cocoapods.org). To install it, simply add the following line to your Podfile:
 
 ```ruby
 pod 'XZPageControl'
@@ -25,14 +24,12 @@ pod 'XZPageControl'
 
 ## 如何使用
 
-XZPageControl 是 UIControl 的子类，跟普通视图的使用规则一样，也支持在 StoryBoard/Xib 中使用。
+`XZPageControl` 是 `UIControl` 类控件，并且支持在 StoryBoard 或 xib 中使用。
 
 ```objc
 // 创建视图
 XZPageControl *pageControl = [[XZPageControl alloc] initWithFrame:CGRectMake(0, 200, 375, 50.0)];
 [self.view addSubview:pageControl];
-// 绑定事件
-[pageControl addTarget:self action:@selector(pageControlValueChanged:) forControlEvents:(UIControlEventValueChanged)];
 ```
 
 设置`numberOfPages`属性就可以正常工作了，还可以通过`currentPage`属性设置初始值。
@@ -44,9 +41,13 @@ pageControl.currentPage = 5;  // 默认展示第 5 页
 
 ### 处理事件
 
-事件继承自原生 UIControl 的 target-action 机制，与 UIButton 的使用方法一样，在用户触摸操作后，就会触发`UIControlEventValueChanged`事件。
+通过 `target-action` 机制，绑定 `UIControlEventValueChanged` 事件。
 
 ```objc
+// 绑定事件
+[pageControl addTarget:self action:@selector(pageControlValueChanged:) forControlEvents:(UIControlEventValueChanged)];
+
+// 处理事件
 - (void)pageControlValueChanged:(XZPageControl *)pageControl {
     NSLog(@"currentPage: %ld", pageControl.currentPage);
 }
@@ -57,13 +58,13 @@ pageControl.currentPage = 5;  // 默认展示第 5 页
 指示器默认为白色圆点，当前页指示器为灰色圆点。通过`fillColor`和`strokeColor`可以自定义指示器颜色。
 
 ```objc
-pageControl.indicatorFillColor = UIColor.grayColor;
-pageControl.indicatorStrokeColor = UIColor.grayColor;
-pageControl.currentIndicatorFillColor = [UIColor colorWithRed:0xbf/255.0 green:0x0f/255.0 blue:0x1f/255.0 alpha:1.0];
-pageControl.currentIndicatorStrokeColor = [UIColor colorWithRed:0xbf/255.0 green:0x0f/255.0 blue:0x1f/255.0 alpha:1.0];
+pageControl.indicatorFillColor          = UIColor.grayColor;
+pageControl.indicatorStrokeColor        = UIColor.grayColor;
+pageControl.currentIndicatorFillColor   = UIColor.redColor;
+pageControl.currentIndicatorStrokeColor = UIColor.redColor;
 ```
 
-通过`shape`可以自定义指示器形状，最终效果与`fillColor`和`strokeColor`相关。
+通过`shape`可以自定义指示器形状。
 
 ```objc
 // 将当前页的指示器改为圆角矩形。

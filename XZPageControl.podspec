@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'XZPageControl'
-  s.version          = '1.1.2'
+  s.version          = '1.1.1'
   s.summary          = '一款支持自由定制外观的、类似于 UIPageControl 的视图控件。'
 
 # This description is used to generate tags and improve search results.
@@ -36,7 +36,7 @@ Pod::Spec.new do |s|
   s.subspec 'Code' do |ss|
     ss.dependency 'XZShapeView'
     ss.source_files = 'XZPageControl/Code/**/*.{h,m}'
-    ss.project_header_files = 'XZPageControl/Code/**/Private/*.{h,m}'
+    ss.project_header_files = 'XZPageControl/Code/**/Private/*.h'
   end
   
   # s.resource_bundles = {
