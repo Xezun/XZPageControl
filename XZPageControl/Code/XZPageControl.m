@@ -69,12 +69,12 @@
         return;
     }
     
-    BOOL       const isLeftLayout = self.effectiveUserInterfaceLayoutDirection == UIUserInterfaceLayoutDirectionLeftToRight;
-    CGPoint    const point        = [touch locationInView:self];
-    NSUInteger const count        = _indicatorItems.count;
+    BOOL       const isLTR = self.effectiveUserInterfaceLayoutDirection == UIUserInterfaceLayoutDirectionLeftToRight;
+    CGPoint    const point = [touch locationInView:self];
+    NSUInteger const count = _indicatorItems.count;
     
     // 点击左边减小页数
-    if ( (isLeftLayout && point.x < CGRectGetMinX(_indicatorItems.firstObject.frame)) || (!isLeftLayout && point.x > CGRectGetMinX(_indicatorItems.firstObject.frame)) ) {
+    if ( (isLTR && point.x < CGRectGetMinX(_indicatorItems.firstObject.frame)) || (!isLTR && point.x > CGRectGetMaxX(_indicatorItems.firstObject.frame)) ) {
         if (_currentPage > 0) {
             [self XZPageControlSetCurrentPage:_currentPage - 1 sendsEvents:YES];
         }
@@ -82,7 +82,7 @@
     }
     
     // 点击右边增加页数
-    if ( (isLeftLayout && point.x > CGRectGetMaxX(_indicatorItems.lastObject.frame)) || (!isLeftLayout && point.x < CGRectGetMaxX(_indicatorItems.lastObject.frame)) ) {
+    if ( (isLTR && point.x > CGRectGetMaxX(_indicatorItems.lastObject.frame)) || (!isLTR && point.x < CGRectGetMinX(_indicatorItems.lastObject.frame)) ) {
         if (_currentPage < _numberOfPages - 1) {
             [self XZPageControlSetCurrentPage:_currentPage + 1 sendsEvents:YES];
         }
