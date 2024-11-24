@@ -30,7 +30,7 @@
         [NSURL URLWithString:@"https://img.ithome.com/newsuploadfiles/focus/dd138b93-a114-4c27-b96d-e9853319907f.jpg"]
     ];
     
-    self.pageView.isLoopable = YES;
+    self.pageView.isLooped = YES;
     self.pageView.autoPagingInterval = 5.0;
     
     self.pageControl.indicatorFillColor = UIColor.whiteColor;
@@ -46,7 +46,14 @@
 }
 
 - (IBAction)alignLeftButtonAction:(id)sender {
-    self.pageControl.contentMode = UIViewContentModeLeft;
+    switch (self.pageControl.orientation) {
+        case XZPageControlOrientationHorizontal:
+            self.pageControl.contentMode = UIViewContentModeLeft;
+            break;
+        case XZPageControlOrientationVertical:
+            self.pageControl.contentMode = UIViewContentModeTop;
+            break;
+    }
 }
 
 - (IBAction)alignCenterButtonAction:(id)sender {
@@ -54,7 +61,14 @@
 }
 
 - (IBAction)alignRightButtonAction:(id)sender {
-    self.pageControl.contentMode = UIViewContentModeRight;
+    switch (self.pageControl.orientation) {
+        case XZPageControlOrientationHorizontal:
+            self.pageControl.contentMode = UIViewContentModeRight;
+            break;
+        case XZPageControlOrientationVertical:
+            self.pageControl.contentMode = UIViewContentModeBottom;
+            break;
+    }
 }
 
 - (IBAction)defautStyleButtonAction:(id)sender {
@@ -68,19 +82,41 @@
     _pageControl.indicatorImage            = nil;
     _pageControl.currentIndicatorImage     = nil;
     
-    UIBezierPath *path = [[UIBezierPath alloc] init];
-    [path moveToPoint:CGPointMake(0.0, 0)];
-    [path addLineToPoint:CGPointMake(6.0, 0)];
-    [path addLineToPoint:CGPointMake(3.0, 6.0)];
-    [path closePath];
-    _pageControl.indicatorShape = path;
-    
-    path = [[UIBezierPath alloc] init];
-    [path moveToPoint:CGPointMake(3.0, 0)];
-    [path addLineToPoint:CGPointMake(6.0, 6.0)];
-    [path addLineToPoint:CGPointMake(0, 6.0)];
-    [path closePath];
-    _pageControl.currentIndicatorShape = path;
+    switch (self.pageControl.orientation) {
+        case XZPageControlOrientationHorizontal: {
+            UIBezierPath *path = [[UIBezierPath alloc] init];
+            [path moveToPoint:CGPointMake(0.0, 0)];
+            [path addLineToPoint:CGPointMake(6.0, 0)];
+            [path addLineToPoint:CGPointMake(3.0, 6.0)];
+            [path closePath];
+            _pageControl.indicatorShape = path;
+            
+            path = [[UIBezierPath alloc] init];
+            [path moveToPoint:CGPointMake(3.0, 0)];
+            [path addLineToPoint:CGPointMake(6.0, 6.0)];
+            [path addLineToPoint:CGPointMake(0, 6.0)];
+            [path closePath];
+            _pageControl.currentIndicatorShape = path;
+            break;
+        }
+        case XZPageControlOrientationVertical: {
+            UIBezierPath *path = [[UIBezierPath alloc] init];
+            [path moveToPoint:CGPointMake(0.0, 0.0)];
+            [path addLineToPoint:CGPointMake(6.0, 3.0)];
+            [path addLineToPoint:CGPointMake(0.0, 6.0)];
+            [path closePath];
+            _pageControl.indicatorShape = path;
+            
+            path = [[UIBezierPath alloc] init];
+            [path moveToPoint:CGPointMake(0.0, 3.0)];
+            [path addLineToPoint:CGPointMake(6.0, 0.0)];
+            [path addLineToPoint:CGPointMake(6.0, 6.0)];
+            [path closePath];
+            _pageControl.currentIndicatorShape = path;
+            break;
+        }
+    }
+
 }
 
 - (IBAction)imageStyleButtonAction:(id)sender {
@@ -109,7 +145,7 @@
     return reusingView;
 }
 
-- (void)pageView:(XZPageView *)pageView didPageToIndex:(NSInteger)index {
+- (void)pageView:(XZPageView *)pageView didShowPageAtIndex:(NSInteger)index {
     NSLog(@"didPageToIndex: %ld", index);
     self.pageControl.currentPage = index;
 }

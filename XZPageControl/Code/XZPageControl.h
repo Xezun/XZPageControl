@@ -10,8 +10,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSInteger, XZPageControlOrientation) {
+    XZPageControlOrientationHorizontal = 0,
+    XZPageControlOrientationVertical = 1
+} API_UNAVAILABLE(watchos);
+
 /// 翻页指示控件。
 @interface XZPageControl : UIControl
+
+/// 排列方向。
+@property (nonatomic) IBInspectable XZPageControlOrientation orientation;
+
+- (instancetype)initWithFrame:(CGRect)frame orientation:(XZPageControlOrientation)orientation;
+- (instancetype)initWithOrientation:(XZPageControlOrientation)orientation;
 
 /// 页面总数。
 @property (nonatomic, assign) NSInteger numberOfPages;

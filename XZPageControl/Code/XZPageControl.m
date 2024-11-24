@@ -17,6 +17,18 @@
     NSMutableArray<XZPageControlIndicatorItem *> *_indicatorItems;
 }
 
+- (instancetype)initWithFrame:(CGRect)frame orientation:(XZPageControlOrientation)orientation {
+    self = [self initWithFrame:frame];
+    if (self) {
+        _orientation = orientation;
+    }
+    return self;
+}
+
+- (instancetype)initWithOrientation:(XZPageControlOrientation)orientation {
+    return [self initWithFrame:(CGRectZero) orientation:orientation];
+}
+
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
@@ -69,24 +81,48 @@
         return;
     }
     
-    BOOL       const isLTR = self.effectiveUserInterfaceLayoutDirection == UIUserInterfaceLayoutDirectionLeftToRight;
     CGPoint    const point = [touch locationInView:self];
     NSUInteger const count = _indicatorItems.count;
     
-    // 点击左边减小页数
-    if ( (isLTR && point.x < CGRectGetMinX(_indicatorItems.firstObject.frame)) || (!isLTR && point.x > CGRectGetMaxX(_indicatorItems.firstObject.frame)) ) {
-        if (_currentPage > 0) {
-            [self XZPageControlSetCurrentPage:_currentPage - 1 sendsEvents:YES];
+    switch (self.orientation) {
+        case XZPageControlOrientationHorizontal: {
+            BOOL const isLTR = self.effectiveUserInterfaceLayoutDirection == UIUserInterfaceLayoutDirectionLeftToRight;
+            
+            // 点击左边减小页数
+            if ( (isLTR && point.x < CGRectGetMinX(_indicatorItems.firstObject.frame)) || (!isLTR && point.x > CGRectGetMaxX(_indicatorItems.firstObject.frame)) ) {
+                if (_currentPage > 0) {
+                    [self XZPageControlSetCurrentPage:_currentPage - 1 sendsEvents:YES];
+                }
+                return;
+            }
+            
+            // 点击右边增加页数
+            if ( (isLTR && point.x > CGRectGetMaxX(_indicatorItems.lastObject.frame)) || (!isLTR && point.x < CGRectGetMinX(_indicatorItems.lastObject.frame)) ) {
+                if (_currentPage < _numberOfPages - 1) {
+                    [self XZPageControlSetCurrentPage:_currentPage + 1 sendsEvents:YES];
+                }
+                return;
+            }
+            break;
         }
-        return;
-    }
-    
-    // 点击右边增加页数
-    if ( (isLTR && point.x > CGRectGetMaxX(_indicatorItems.lastObject.frame)) || (!isLTR && point.x < CGRectGetMinX(_indicatorItems.lastObject.frame)) ) {
-        if (_currentPage < _numberOfPages - 1) {
-            [self XZPageControlSetCurrentPage:_currentPage + 1 sendsEvents:YES];
+        case XZPageControlOrientationVertical: {
+            // 点击上边减小页数
+            if ( point.y < CGRectGetMinY(_indicatorItems.firstObject.frame) ) {
+                if (_currentPage > 0) {
+                    [self XZPageControlSetCurrentPage:_currentPage - 1 sendsEvents:YES];
+                }
+                return;
+            }
+            
+            // 点击下边增加页数
+            if ( point.y > CGRectGetMaxY(_indicatorItems.lastObject.frame) ) {
+                if (_currentPage < _numberOfPages - 1) {
+                    [self XZPageControlSetCurrentPage:_currentPage + 1 sendsEvents:YES];
+                }
+                return;
+            }
+            break;
         }
-        return;
     }
     
     // 点击了指定页面
@@ -121,44 +157,82 @@
         return;
     }
     
-    CGRect  const bounds = UIEdgeInsetsInsetRect(self.bounds, self.layoutMargins);
-    CGFloat const width  = MIN(_maximumIndicatorSpacing, bounds.size.width / count);
-    CGFloat __block x    = 0;
-    
-    // 根据 contentMode 确定布局起点。
-    switch (self.contentMode) {
-        case UIViewContentModeLeft:
-            x = CGRectGetMinX(bounds);
-            break;
-        case UIViewContentModeRight:
-            x = CGRectGetMaxX(bounds) - width * count;
-            break;
-        default:
-            x = CGRectGetMinX(bounds) + (bounds.size.width - width * count) * 0.5;
-            break;
-    }
-    
-    // 根据布局方向，逐个排列指示器。
-    switch (self.effectiveUserInterfaceLayoutDirection) {
-        case UIUserInterfaceLayoutDirectionLeftToRight:
-            [_indicatorItems enumerateObjectsUsingBlock:^(XZPageControlIndicatorItem *indicator, NSUInteger idx, BOOL *stop) {
-                indicator.frame = CGRectMake(x, bounds.origin.y, width, bounds.size.height);
-                x += width;
-            }];
-            break;
+    switch (self.orientation) {
+        case XZPageControlOrientationHorizontal: {
+            CGRect  const bounds = UIEdgeInsetsInsetRect(self.bounds, self.layoutMargins);
+            CGFloat const width  = MIN(_maximumIndicatorSpacing, bounds.size.width / count);
+            CGFloat __block x    = 0;
             
-        case UIUserInterfaceLayoutDirectionRightToLeft:
-            [_indicatorItems enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(XZPageControlIndicatorItem *indicator, NSUInteger idx, BOOL *stop) {
-                indicator.frame = CGRectMake(x, bounds.origin.y, width, bounds.size.height);
-                x += width;
+            // 根据 contentMode 确定布局起点。
+            switch (self.contentMode) {
+                case UIViewContentModeLeft:
+                    x = CGRectGetMinX(bounds);
+                    break;
+                case UIViewContentModeRight:
+                    x = CGRectGetMaxX(bounds) - width * count;
+                    break;
+                default:
+                    x = CGRectGetMinX(bounds) + (bounds.size.width - width * count) * 0.5;
+                    break;
+            }
+            
+            // 根据布局方向，逐个排列指示器。
+            switch (self.effectiveUserInterfaceLayoutDirection) {
+                case UIUserInterfaceLayoutDirectionLeftToRight:
+                    [_indicatorItems enumerateObjectsUsingBlock:^(XZPageControlIndicatorItem *indicator, NSUInteger idx, BOOL *stop) {
+                        indicator.frame = CGRectMake(x, bounds.origin.y, width, bounds.size.height);
+                        x += width;
+                    }];
+                    break;
+                    
+                case UIUserInterfaceLayoutDirectionRightToLeft:
+                    [_indicatorItems enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(XZPageControlIndicatorItem *indicator, NSUInteger idx, BOOL *stop) {
+                        indicator.frame = CGRectMake(x, bounds.origin.y, width, bounds.size.height);
+                        x += width;
+                    }];
+                    break;
+                default:
+                    break;
+            }
+            break;
+        }
+            
+        case XZPageControlOrientationVertical: {
+            CGRect  const bounds = UIEdgeInsetsInsetRect(self.bounds, self.layoutMargins);
+            CGFloat const height = MIN(_maximumIndicatorSpacing, bounds.size.height / count);
+            CGFloat __block y    = 0;
+            
+            // 根据 contentMode 确定布局起点。
+            switch (self.contentMode) {
+                case UIViewContentModeTop:
+                    y = CGRectGetMinY(bounds);
+                    break;
+                case UIViewContentModeBottom:
+                    y = CGRectGetMaxY(bounds) - height * count;
+                    break;
+                default:
+                    y = CGRectGetMinY(bounds) + (bounds.size.height - height * count) * 0.5;
+                    break;
+            }
+            
+            // 根据布局方向，逐个排列指示器。
+            [_indicatorItems enumerateObjectsUsingBlock:^(XZPageControlIndicatorItem *indicator, NSUInteger idx, BOOL *stop) {
+                indicator.frame = CGRectMake(bounds.origin.x, y, bounds.size.width, height);
+                y += height;
             }];
             break;
-        default:
-            break;
+        }
     }
 }
 
 #pragma mark - Public Methods
+
+- (void)setOrientation:(XZPageControlOrientation)orientation {
+    if (_orientation != orientation) {
+        _orientation = orientation;
+        [self setNeedsLayout];
+    }
+}
 
 - (void)setNumberOfPages:(NSInteger)numberOfPages {
     if (_numberOfPages != numberOfPages) {
