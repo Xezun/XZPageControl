@@ -46,14 +46,7 @@
 }
 
 - (IBAction)alignLeftButtonAction:(id)sender {
-    switch (self.pageControl.orientation) {
-        case XZPageControlOrientationHorizontal:
-            self.pageControl.contentMode = UIViewContentModeLeft;
-            break;
-        case XZPageControlOrientationVertical:
-            self.pageControl.contentMode = UIViewContentModeTop;
-            break;
-    }
+    self.pageControl.contentMode = UIViewContentModeLeft;
 }
 
 - (IBAction)alignCenterButtonAction:(id)sender {
@@ -61,14 +54,7 @@
 }
 
 - (IBAction)alignRightButtonAction:(id)sender {
-    switch (self.pageControl.orientation) {
-        case XZPageControlOrientationHorizontal:
-            self.pageControl.contentMode = UIViewContentModeRight;
-            break;
-        case XZPageControlOrientationVertical:
-            self.pageControl.contentMode = UIViewContentModeBottom;
-            break;
-    }
+    self.pageControl.contentMode = UIViewContentModeRight;
 }
 
 - (IBAction)defautStyleButtonAction:(id)sender {
@@ -147,7 +133,11 @@
 
 - (void)pageView:(XZPageView *)pageView didShowPageAtIndex:(NSInteger)index {
     NSLog(@"didPageToIndex: %ld", index);
-    self.pageControl.currentPage = index;
+    [self.pageControl setCurrentPage:index animated:YES];
+}
+
+- (void)pageView:(XZPageView *)pageView didTurnPageWithTransition:(CGFloat)transition {
+    
 }
 
 - (void)pageControlDidChangeValue:(XZPageControl *)pageControl {
