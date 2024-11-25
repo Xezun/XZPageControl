@@ -15,13 +15,22 @@ typedef NS_ENUM(NSInteger, XZPageControlOrientation) {
     XZPageControlOrientationVertical = 1
 } API_UNAVAILABLE(watchos);
 
+@class UIPageControl;
+
 /// 翻页指示控件。
 @interface XZPageControl : UIControl
 
 /// 排列方向。
 @property (nonatomic) IBInspectable XZPageControlOrientation orientation;
 
+/// 便利初始化方法。
+/// - Parameters:
+///   - frame: CGRect
+///   - orientation: 布局方向
 - (instancetype)initWithFrame:(CGRect)frame orientation:(XZPageControlOrientation)orientation;
+
+/// 便利初始化方法。
+/// - Parameter orientation: 布局方向。
 - (instancetype)initWithOrientation:(XZPageControlOrientation)orientation;
 
 /// 页面总数。
@@ -35,6 +44,15 @@ typedef NS_ENUM(NSInteger, XZPageControlOrientation) {
 ///   - currentPage: 页序
 ///   - animated: 是否动画，需要指示器支持，比如以 UIBezierPath 作为指示器，在切换时会展示路径变换动画
 - (void)setCurrentPage:(NSInteger)currentPage animated:(BOOL)animated;
+
+/// 交互式转场时，可通过此属性控制指示器的样式切换进度。
+/// @note 内置样式仅在使用 shape 作为指示器时，此属性才会生效。
+@property (nonatomic) CGFloat transition;
+
+/// 设置交互式转场进度。
+/// @param transition 转场进度
+/// @param isLooped 是否循环
+- (void)setTransition:(CGFloat)transition isLooped:(BOOL)isLooped;
 
 /// 单页时是否隐藏，默认 YES 。
 @property (nonatomic) BOOL hidesForSinglePage;
@@ -78,6 +96,7 @@ typedef NS_ENUM(NSInteger, XZPageControlOrientation) {
 
 // 独立样式
 // 只能为已存在的指示器指定独立样式，且样式不会保存。
+// 样式优先级：image > shape 且 shape 默认为直径为 6.0 的圆。
 
 - (UIColor *)indicatorStrokeColorForPage:(NSInteger)page;
 - (void)setIndicatorStrokeColor:(nullable UIColor *)indicatorColor forPage:(NSInteger)page;

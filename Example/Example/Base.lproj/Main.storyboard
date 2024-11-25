@@ -92,7 +92,7 @@
             </objects>
             <point key="canvasLocation" x="-306" y="-32"/>
         </scene>
-        <!--XZPageControl-->
+        <!--水平布局-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
@@ -122,7 +122,7 @@
                                         <rect key="frame" x="0.0" y="0.0" width="100" height="50"/>
                                         <color key="backgroundColor" systemColor="systemGray6Color"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="100" id="0ma-ez-Pcn"/>
+                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="0ma-ez-Pcn"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
@@ -166,7 +166,7 @@
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="外观样式：" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vlS-tC-Bcv">
                                         <rect key="frame" x="0.0" y="0.0" width="100" height="50"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="100" id="JJf-Fe-vfi"/>
+                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="JJf-Fe-vfi"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
@@ -210,7 +210,7 @@
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="最大间距：" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vKE-UX-1Lo">
                                         <rect key="frame" x="0.0" y="0.0" width="100" height="50"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="100" id="idy-oC-sNM"/>
+                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="idy-oC-sNM"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
@@ -249,7 +249,17 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="2NJ-ri-7ll" secondAttribute="trailing" id="vt0-em-sQe"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="XZPageControl" id="ykt-0r-C5q"/>
+                    <navigationItem key="navigationItem" title="水平布局" id="ykt-0r-C5q">
+                        <barButtonItem key="rightBarButtonItem" id="aQ6-oN-fQx">
+                            <switch key="customView" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="aDg-1p-Uia">
+                                <rect key="frame" x="326" y="6.6666666666666679" width="51" height="31.000000000000004"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="isLoopedSwitchValueChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="gKP-AL-jsY"/>
+                                </connections>
+                            </switch>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="pageControl" destination="Vn1-z7-oGe" id="3Of-05-zzR"/>
                         <outlet property="pageView" destination="2NJ-ri-7ll" id="dOJ-wf-U3S"/>
@@ -259,7 +269,7 @@
             </objects>
             <point key="canvasLocation" x="844" y="-373"/>
         </scene>
-        <!--XZPageControl-->
+        <!--垂直布局-->
         <scene sceneID="JYN-6z-BfH">
             <objects>
                 <viewController id="zXQ-20-86T" customClass="ViewController" sceneMemberID="viewController">
@@ -268,10 +278,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PP8-gh-n1Q" customClass="XZPageView">
-                                <rect key="frame" x="0.0" y="103" width="393" height="294.66666666666669"/>
+                                <rect key="frame" x="0.0" y="103.00000000000001" width="393" height="157.33333333333337"/>
                                 <color key="backgroundColor" systemColor="systemGray6Color"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" secondItem="PP8-gh-n1Q" secondAttribute="height" multiplier="4:3" id="iiW-oR-LS2"/>
+                                    <constraint firstAttribute="width" secondItem="PP8-gh-n1Q" secondAttribute="height" multiplier="375:150" id="iiW-oR-LS2"/>
                                 </constraints>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="orientation">
@@ -280,7 +290,7 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ihk-2J-Mj0" customClass="XZPageControl">
-                                <rect key="frame" x="343" y="103" width="50" height="294.66666666666669"/>
+                                <rect key="frame" x="343" y="103.00000000000001" width="50" height="157.33333333333337"/>
                                 <color key="backgroundColor" systemColor="separatorColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="Lzl-Ay-YuI"/>
@@ -293,13 +303,13 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="51e-fg-vzC">
-                                <rect key="frame" x="20" y="447.66666666666669" width="353" height="50"/>
+                                <rect key="frame" x="20" y="310.33333333333331" width="353" height="50"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="对齐方式：" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AX8-Tl-Tdv">
                                         <rect key="frame" x="0.0" y="0.0" width="100" height="50"/>
                                         <color key="backgroundColor" systemColor="systemGray6Color"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="100" id="5lg-lx-jdK"/>
+                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="5lg-lx-jdK"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
@@ -338,12 +348,12 @@
                                 </constraints>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zCf-83-Pbz">
-                                <rect key="frame" x="20" y="507.66666666666674" width="353" height="50"/>
+                                <rect key="frame" x="20" y="370.33333333333331" width="353" height="50"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="外观样式：" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WvK-Tl-SwK">
                                         <rect key="frame" x="0.0" y="0.0" width="100" height="50"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="100" id="it4-4e-epi"/>
+                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="it4-4e-epi"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
@@ -382,12 +392,12 @@
                                 </constraints>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5G4-d3-A5p">
-                                <rect key="frame" x="20" y="567.66666666666663" width="353" height="50"/>
+                                <rect key="frame" x="20" y="430.33333333333331" width="353" height="50"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="最大间距：" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gQa-Tl-7Ag">
                                         <rect key="frame" x="0.0" y="0.0" width="100" height="50"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="100" id="ssB-8S-KlW"/>
+                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="ssB-8S-KlW"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
@@ -426,7 +436,17 @@
                             <constraint firstItem="5G4-d3-A5p" firstAttribute="top" secondItem="zCf-83-Pbz" secondAttribute="bottom" constant="10" id="y7b-uU-9tS"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="XZPageControl" id="BGH-DN-jIf"/>
+                    <navigationItem key="navigationItem" title="垂直布局" id="BGH-DN-jIf">
+                        <barButtonItem key="rightBarButtonItem" id="Sju-Dz-V7C">
+                            <switch key="customView" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="ayf-Hu-L2i">
+                                <rect key="frame" x="326" y="6.6666666666666679" width="51" height="31.000000000000004"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="isLoopedSwitchValueChanged:" destination="zXQ-20-86T" eventType="valueChanged" id="HfC-yC-Agh"/>
+                                </connections>
+                            </switch>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="pageControl" destination="ihk-2J-Mj0" id="V4y-TP-1uC"/>
                         <outlet property="pageView" destination="PP8-gh-n1Q" id="xTz-Yb-q99"/>
@@ -445,13 +465,13 @@
         <image name="align.vertical.center" catalog="system" width="128" height="98"/>
         <image name="align.vertical.top" catalog="system" width="128" height="115"/>
         <systemColor name="separatorColor">
-            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.28999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.28999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray6Color">
-            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

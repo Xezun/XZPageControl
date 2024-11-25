@@ -135,6 +135,14 @@
     return _isCurrent;
 }
 
+- (void)setTransition:(CGFloat)transition {
+    [self.view setTransition:transition];
+}
+
+- (CGFloat)transition {
+    return _view.transition;
+}
+
 - (UIColor *)strokeColor {
     return _attributes.strokeColor;
 }

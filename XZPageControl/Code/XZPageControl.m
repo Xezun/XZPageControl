@@ -13,6 +13,7 @@
 @end
 
 @implementation XZPageControl {
+    /// 记录指示器默认样式的对象。
     XZPageControlAttributes *_defaultAttributes;
     NSMutableArray<XZPageControlIndicatorItem *> *_indicatorItems;
 }
@@ -49,13 +50,11 @@
     super.hidden = YES;
     super.contentMode = UIViewContentModeCenter;
     
-    _hidesForSinglePage = YES;
+    _hidesForSinglePage      = YES;
     _maximumIndicatorSpacing = 30.0;
-
-    _indicatorItems = [NSMutableArray array];
-    _defaultAttributes = nil;
-    _numberOfPages = 0;
-    _currentPage   = 0;
+    _indicatorItems          = [NSMutableArray array];
+    _defaultAttributes       = nil;
+    _currentPage             = 0;
 }
 
 - (XZPageControlAttributes *)defaultAttributes {
@@ -77,7 +76,7 @@
 - (void)endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event {
     [super endTrackingWithTouch:touch withEvent:event];
     
-    if (!self.isTouchInside || _numberOfPages < 2) {
+    if (!self.isTouchInside || _indicatorItems.count < 2) {
         return;
     }
     
@@ -98,7 +97,7 @@
             
             // 点击右边增加页数
             if ( (isLTR && point.x > CGRectGetMaxX(_indicatorItems.lastObject.frame)) || (!isLTR && point.x < CGRectGetMinX(_indicatorItems.lastObject.frame)) ) {
-                if (_currentPage < _numberOfPages - 1) {
+                if (_currentPage < _indicatorItems.count - 1) {
                     [self XZPageControlSetCurrentPage:_currentPage + 1 animated:YES sendsEvents:YES];
                 }
                 return;
@@ -116,7 +115,7 @@
             
             // 点击下边增加页数
             if ( point.y > CGRectGetMaxY(_indicatorItems.lastObject.frame) ) {
-                if (_currentPage < _numberOfPages - 1) {
+                if (_currentPage < _indicatorItems.count - 1) {
                     [self XZPageControlSetCurrentPage:_currentPage + 1 animated:YES sendsEvents:YES];
                 }
                 return;
@@ -137,16 +136,6 @@
 - (void)layoutMarginsDidChange {
     [super layoutMarginsDidChange];
     [self setNeedsLayout];
-}
-
-- (void)willMoveToWindow:(UIWindow *)newWindow {
-    [super willMoveToWindow:newWindow];
-    
-    if (newWindow != nil) {
-        [_indicatorItems enumerateObjectsUsingBlock:^(XZPageControlIndicatorItem * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            [obj view];
-        }];
-    }
 }
 
 - (void)layoutSubviews {
@@ -193,8 +182,6 @@
                         x += width;
                     }];
                     break;
-                default:
-                    break;
             }
             break;
         }
@@ -238,31 +225,33 @@
     }
 }
 
+- (NSInteger)numberOfPages {
+    return _indicatorItems.count;
+}
+
 - (void)setNumberOfPages:(NSInteger)numberOfPages {
-    if (_numberOfPages != numberOfPages) {
-        _numberOfPages = numberOfPages;
-        
-        if (_numberOfPages == 0) {
+    if (_indicatorItems.count != numberOfPages) {
+        if (numberOfPages == 0) {
             [self XZPageControlSetCurrentPage:0 animated:NO sendsEvents:NO];
             [_indicatorItems removeAllObjects];
         } else {
             // 同步数量
-            for (NSInteger i = _indicatorItems.count; i < _numberOfPages; i++) {
+            for (NSInteger i = _indicatorItems.count; i < numberOfPages; i++) {
                 XZPageControlIndicatorItem *item = [XZPageControlIndicatorItem itemForPageControl:self attributes:_defaultAttributes.copy];
                 [item setCurrent:(i == _currentPage) animated:NO];
                 [_indicatorItems addObject:item];
             }
-            for (NSInteger i = _indicatorItems.count - 1; i >= _numberOfPages; i--) {
+            for (NSInteger i = _indicatorItems.count - 1; i >= numberOfPages; i--) {
                 [_indicatorItems removeObjectAtIndex:i];
             }
             
             // 修正当前指示器
-            if (_currentPage >= _numberOfPages) {
-                [self XZPageControlSetCurrentPage:_numberOfPages - 1 animated:NO sendsEvents:NO];
+            if (_currentPage >= numberOfPages) {
+                [self XZPageControlSetCurrentPage:numberOfPages - 1 animated:NO sendsEvents:NO];
             }
         }
         
-        self.hidden = (_hidesForSinglePage && _numberOfPages <= 1);
+        self.hidden = (_hidesForSinglePage && numberOfPages <= 1);
         
         [self setNeedsLayout];
     }
@@ -273,15 +262,45 @@
 }
 
 - (void)setCurrentPage:(NSInteger)currentPage animated:(BOOL)animated {
-    NSParameterAssert(currentPage >= 0 && currentPage < _numberOfPages);
+    NSParameterAssert(currentPage >= 0 && currentPage < _indicatorItems.count);
     [self XZPageControlSetCurrentPage:currentPage animated:animated sendsEvents:NO];
+}
+
+- (void)setTransition:(CGFloat)transition {
+    [self setTransition:transition isLooped:NO];
+}
+
+- (void)setTransition:(CGFloat)transition isLooped:(BOOL)isLooped {
+    NSUInteger const numberOfPages = _indicatorItems.count;
+    if (transition > 0) {
+        _indicatorItems[_currentPage].transition = transition;
+        if (_currentPage < numberOfPages - 1) {
+            _indicatorItems[_currentPage + 1].transition = transition;
+        } else if (isLooped) {
+            _indicatorItems[0].transition = transition;
+        }
+    } else if (transition < 0) {
+        _indicatorItems[_currentPage].transition = -transition;
+        if (_currentPage > 0) {
+            _indicatorItems[_currentPage - 1].transition = -transition;
+        } else if (isLooped) {
+            _indicatorItems[numberOfPages - 1].transition = -transition;
+        }
+    }
+}
+
+- (CGFloat)transition {
+    if (_currentPage < _indicatorItems.count - 1) {
+        return _indicatorItems[_currentPage].transition;
+    }
+    return 0;
 }
 
 - (void)setHidesForSinglePage:(BOOL)hidesForSinglePage {
     if (_hidesForSinglePage != hidesForSinglePage) {
         _hidesForSinglePage = hidesForSinglePage;
         
-        self.hidden = (_hidesForSinglePage && _numberOfPages <= 1);
+        self.hidden = (_hidesForSinglePage && _indicatorItems.count <= 1);
     }
 }
 

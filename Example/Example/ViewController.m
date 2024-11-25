@@ -45,15 +45,12 @@
     [self.pageControl addTarget:self action:@selector(pageControlDidChangeValue:) forControlEvents:(UIControlEventValueChanged)];
 }
 
+- (IBAction)isLoopedSwitchValueChanged:(UISwitch *)sender {
+    self.pageView.isLooped = sender.isOn;
+}
+
 - (IBAction)alignLeftButtonAction:(id)sender {
-    switch (self.pageControl.orientation) {
-        case XZPageControlOrientationHorizontal:
-            self.pageControl.contentMode = UIViewContentModeLeft;
-            break;
-        case XZPageControlOrientationVertical:
-            self.pageControl.contentMode = UIViewContentModeTop;
-            break;
-    }
+    self.pageControl.contentMode = UIViewContentModeLeft;
 }
 
 - (IBAction)alignCenterButtonAction:(id)sender {
@@ -61,14 +58,7 @@
 }
 
 - (IBAction)alignRightButtonAction:(id)sender {
-    switch (self.pageControl.orientation) {
-        case XZPageControlOrientationHorizontal:
-            self.pageControl.contentMode = UIViewContentModeRight;
-            break;
-        case XZPageControlOrientationVertical:
-            self.pageControl.contentMode = UIViewContentModeBottom;
-            break;
-    }
+    self.pageControl.contentMode = UIViewContentModeRight;
 }
 
 - (IBAction)defautStyleButtonAction:(id)sender {
@@ -85,16 +75,16 @@
     switch (self.pageControl.orientation) {
         case XZPageControlOrientationHorizontal: {
             UIBezierPath *path = [[UIBezierPath alloc] init];
-            [path moveToPoint:CGPointMake(0.0, 0)];
-            [path addLineToPoint:CGPointMake(6.0, 0)];
+            [path moveToPoint:CGPointMake(0.0, 0.0)];
+            [path addLineToPoint:CGPointMake(6.0, 0.0)];
             [path addLineToPoint:CGPointMake(3.0, 6.0)];
             [path closePath];
             _pageControl.indicatorShape = path;
             
             path = [[UIBezierPath alloc] init];
-            [path moveToPoint:CGPointMake(3.0, 0)];
+            [path moveToPoint:CGPointMake(3.0, 0.0)];
             [path addLineToPoint:CGPointMake(6.0, 6.0)];
-            [path addLineToPoint:CGPointMake(0, 6.0)];
+            [path addLineToPoint:CGPointMake(0.0, 6.0)];
             [path closePath];
             _pageControl.currentIndicatorShape = path;
             break;
@@ -146,8 +136,13 @@
 }
 
 - (void)pageView:(XZPageView *)pageView didShowPageAtIndex:(NSInteger)index {
-    NSLog(@"didPageToIndex: %ld", index);
-    self.pageControl.currentPage = index;
+    NSLog(@"didShowPage: %ld", index);
+    [self.pageControl setCurrentPage:index animated:YES];
+}
+
+- (void)pageView:(XZPageView *)pageView didTurnPageWithTransition:(CGFloat)transition {
+    NSLog(@"didTurnPage: %lf", transition);
+    [self.pageControl setTransition:transition isLooped:pageView.isLooped];
 }
 
 - (void)pageControlDidChangeValue:(XZPageControl *)pageControl {
