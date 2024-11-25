@@ -35,7 +35,7 @@
     if (self) {
         self.userInteractionEnabled = NO;
         _needsUpdate = NO;
-        [self setNeedsUpdate];
+        [self setNeedsUpdate:NO];
     }
     return self;
 }
@@ -43,14 +43,14 @@
 - (void)setStrokeColor:(UIColor *)strokeColor {
     if (_strokeColor != strokeColor) {
         _strokeColor = strokeColor;
-        [self setNeedsUpdate];
+        [self setNeedsUpdate:NO];
     }
 }
 
 - (void)setCurrentStrokeColor:(UIColor *)currentStrokeColor {
     if (_currentStrokeColor != currentStrokeColor) {
         _currentStrokeColor = currentStrokeColor;
-        [self setNeedsUpdate];
+        [self setNeedsUpdate:NO];
     }
 }
 
@@ -64,7 +64,7 @@
 - (void)setFillColor:(UIColor *)fillColor {
     if (_fillColor != fillColor) {
         _fillColor = fillColor;
-        [self setNeedsUpdate];
+        [self setNeedsUpdate:NO];
     }
 }
 
@@ -78,7 +78,7 @@
 - (void)setCurrentFillColor:(UIColor *)currentFillColor {
     if (_currentFillColor != currentFillColor) {
         _currentFillColor = currentFillColor;
-        [self setNeedsUpdate];
+        [self setNeedsUpdate:NO];
     }
 }
 
@@ -92,7 +92,7 @@
 - (void)setShape:(UIBezierPath *)shape {
     if (_shape != shape) {
         _shape = shape.copy;
-        [self setNeedsUpdate];
+        [self setNeedsUpdate:NO];
     }
 }
 
@@ -106,25 +106,25 @@
 - (void)setCurrentShape:(UIBezierPath *)currentShape {
     if (_currentShape != currentShape) {
         _currentShape = currentShape.copy;
-        [self setNeedsUpdate];
+        [self setNeedsUpdate:NO];
     }
 }
 
 - (void)setImage:(UIImage *)image {
     if (_image != image) {
         _image = image;
-        [self setNeedsUpdate];
+        [self setNeedsUpdate:NO];
     }
 }
 
-- (void)setCurrent:(BOOL)isCurrent {
+- (void)setCurrent:(BOOL)isCurrent animated:(BOOL)animated {
     if (_isCurrent != isCurrent) {
         _isCurrent = isCurrent;
-        [self setNeedsUpdate];
+        [self setNeedsUpdate:animated];
     }
 }
 
-- (void)setNeedsUpdate {
+- (void)setNeedsUpdate:(BOOL)animated {
     if (_needsUpdate) {
         return;
     }
@@ -132,11 +132,11 @@
     
     typeof(self) __weak wself = self;
     [NSRunLoop.mainRunLoop performInModes:@[NSRunLoopCommonModes] block:^{
-        [wself updateIfNeeded];
+        [wself updateIfNeeded:animated];
     }];
 }
 
-- (void)updateIfNeeded {
+- (void)updateIfNeeded:(BOOL)animated {
     if (!_needsUpdate) {
         return;
     }
@@ -144,20 +144,20 @@
     
     if (self.isCurrent) {
         if (self.currentImage == nil) {
-            [self updateAppearanceByUsingShape:self.currentShape fillColor:self.currentFillColor strokeColor:self.currentStrokeColor];
+            [self updateWithShape:self.currentShape fillColor:self.currentFillColor strokeColor:self.currentStrokeColor animated:animated];
         } else {
-            [self updateAppearanceByUsingImage:self.currentImage];
+            [self updateWithImage:self.currentImage];
         }
     } else {
         if (self.image == nil) {
-            [self updateAppearanceByUsingShape:self.shape fillColor:self.fillColor strokeColor:self.strokeColor];
+            [self updateWithShape:self.shape fillColor:self.fillColor strokeColor:self.strokeColor animated:animated];
         } else {
-            [self updateAppearanceByUsingImage:self.image];
+            [self updateWithImage:self.image];
         }
     }
 }
 
-- (void)updateAppearanceByUsingImage:(UIImage *)image {
+- (void)updateWithImage:(UIImage *)image {
     _shapeView.hidden = YES;
     
     if (_imageView == nil) {
@@ -173,7 +173,7 @@
     _imageView.bounds = CGRectMake(0, 0, size.width, size.height);
 }
 
-- (void)updateAppearanceByUsingShape:(UIBezierPath *)shape fillColor:(UIColor *)fillColor strokeColor:(UIColor *)strokeColor {
+- (void)updateWithShape:(UIBezierPath *)shape fillColor:(UIColor *)fillColor strokeColor:(UIColor *)strokeColor animated:(BOOL)animated {
     _imageView.hidden = YES;
     
     if (_shapeView == nil) {
@@ -185,12 +185,14 @@
     }
     
     CGPathRef const path = shape.CGPath;
-    _shapeView.path        = path;
-    _shapeView.fillColor   = fillColor.CGColor;
-    _shapeView.strokeColor = strokeColor.CGColor;
-    
-    CGSize const size = [self intrinsicContentSizeForShape:path];
+    CGSize    const size = [self intrinsicContentSizeForShape:path];
     _shapeView.bounds = CGRectMake(0, 0, size.width, size.height);
+    
+    [UIView animateWithDuration:animated ? 0.35 : 0 animations:^{
+        self->_shapeView.path        = path;
+        self->_shapeView.fillColor   = fillColor.CGColor;
+        self->_shapeView.strokeColor = strokeColor.CGColor;
+    }];
 }
 
 - (CGSize)intrinsicContentSizeForImage:(UIImage *)image {

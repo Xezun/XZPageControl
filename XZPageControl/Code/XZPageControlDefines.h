@@ -9,7 +9,10 @@
 
 /// 自定义指示器需要实现的协议。
 @protocol XZPageControlIndicator <NSObject>
-@property (nonatomic, setter=setCurrent:) BOOL isCurrent;
+
+@property (nonatomic, readonly) BOOL isCurrent;
+- (void)setCurrent:(BOOL)isCurrent animated:(BOOL)animated;
+
 @optional
 @property (nonatomic, strong, nullable) UIColor *strokeColor;
 @property (nonatomic, strong, nullable) UIColor *currentStrokeColor;
@@ -22,4 +25,5 @@
 
 @property (nonatomic, strong, nullable) UIImage *image;
 @property (nonatomic, strong, nullable) UIImage *currentImage;
+
 @end

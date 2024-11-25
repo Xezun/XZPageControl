@@ -25,7 +25,7 @@
     @throw [NSException exceptionWithName:NSGenericException reason:@"方法未实现" userInfo:nil];
 }
 
-- (void)setCurrent:(BOOL)isCurrent {
+- (void)setCurrent:(BOOL)isCurrent animated:(BOOL)animated {
     @throw [NSException exceptionWithName:NSGenericException reason:@"方法未实现" userInfo:nil];
 }
 

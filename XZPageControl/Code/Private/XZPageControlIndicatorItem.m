@@ -65,7 +65,6 @@
 
 - (void)viewDidLoad {
     [_pageControl addSubview:_view];
-    _view.isCurrent = _isCurrent;
     
     // 复制属性
     if (_attributes.strokeColor) {
@@ -111,6 +110,8 @@
             _view.currentImage = _attributes.currentImage;
         }
     }
+    
+    [_view setCurrent:_isCurrent animated:NO];
 }
 
 - (CGRect)frame {
@@ -123,10 +124,10 @@
 
 @synthesize isCurrent = _isCurrent;
 
-- (void)setCurrent:(BOOL)isCurrent {
+- (void)setCurrent:(BOOL)isCurrent animated:(BOOL)animated {
     if (_isCurrent != isCurrent) {
         _isCurrent = isCurrent;
-        _view.isCurrent = isCurrent;
+        [_view setCurrent:isCurrent animated:animated];
     }
 }
 

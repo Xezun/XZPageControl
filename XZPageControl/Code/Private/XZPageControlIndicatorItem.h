@@ -19,7 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface XZPageControlIndicatorItem : NSObject <XZPageControlIndicator>
 /// 设置 frame 会懒加载指示器视图。
 @property (nonatomic) CGRect frame;
-@property (nonatomic, setter=setCurrent:) BOOL isCurrent;
 /// XZPageControl 应避免操作此视图。
 @property (nonatomic, strong) UIView<XZPageControlIndicator> *view;
 @property (nonatomic, strong, readonly) XZPageControlAttributes *attributes;

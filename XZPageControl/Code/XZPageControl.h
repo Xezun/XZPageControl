@@ -25,9 +25,17 @@ typedef NS_ENUM(NSInteger, XZPageControlOrientation) {
 - (instancetype)initWithOrientation:(XZPageControlOrientation)orientation;
 
 /// 页面总数。
-@property (nonatomic, assign) NSInteger numberOfPages;
+@property (nonatomic) NSInteger numberOfPages;
+
 /// 当前页，默认值 0 。
-@property (nonatomic, assign) NSInteger currentPage;
+@property (nonatomic) NSInteger currentPage;
+
+/// 更改当前页。
+/// - Parameters:
+///   - currentPage: 页序
+///   - animated: 是否动画，需要指示器支持，比如以 UIBezierPath 作为指示器，在切换时会展示路径变换动画
+- (void)setCurrentPage:(NSInteger)currentPage animated:(BOOL)animated;
+
 /// 单页时是否隐藏，默认 YES 。
 @property (nonatomic) BOOL hidesForSinglePage;
 
@@ -38,10 +46,10 @@ typedef NS_ENUM(NSInteger, XZPageControlOrientation) {
 @property (nonatomic) CGFloat maximumIndicatorSpacing;
 
 /// 指示器排列方式。
-/// @discussion 支持以下三种模式：
-/// @discussion @b UIViewContentModeCenter @c 指示器居中排列，默认
-/// @discussion @b UIViewContentModeLeft @c 指示器居左排列
-/// @discussion @b UIViewContentModeRight @c 指示器居右排列
+/// @discussion 支持的排列方式：
+/// @li @b UIViewContentModeCenter @c 居中排列，默认
+/// @li @b UIViewContentModeLeft/UIViewContentModeTop @c 水平排列时居左，垂直时靠顶
+/// @li @b UIViewContentModeRight/UIViewContentModeBottom @c 水平排列时居右，垂直时靠底
 @property (nonatomic) UIViewContentMode contentMode;
 
 // 默认样式。
