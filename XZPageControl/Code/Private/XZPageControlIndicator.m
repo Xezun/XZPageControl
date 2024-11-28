@@ -8,6 +8,8 @@
 #import "XZPageControlIndicator.h"
 #import <XZShapeView/XZShapeView.h>
 
+#define XZPageControlAnimationDuration 0.35
+
 @implementation XZPageControlIndicator {
     // _imageView 与 _shapeView 并非完全互斥，
     // 因为可以在 isCurrent 两种状态之间分别选择其中一种样式，用来展示。
@@ -17,6 +19,8 @@
 }
 
 @synthesize isCurrent = _isCurrent;
+
+@synthesize transition = _transition;
 
 @synthesize fillColor = _fillColor;
 @synthesize currentFillColor = _currentFillColor;
@@ -35,7 +39,7 @@
     if (self) {
         self.userInteractionEnabled = NO;
         _needsUpdate = NO;
-        [self setNeedsUpdate];
+        [self setNeedsUpdate:NO];
     }
     return self;
 }
@@ -43,14 +47,14 @@
 - (void)setStrokeColor:(UIColor *)strokeColor {
     if (_strokeColor != strokeColor) {
         _strokeColor = strokeColor;
-        [self setNeedsUpdate];
+        [self setNeedsUpdate:NO];
     }
 }
 
 - (void)setCurrentStrokeColor:(UIColor *)currentStrokeColor {
     if (_currentStrokeColor != currentStrokeColor) {
         _currentStrokeColor = currentStrokeColor;
-        [self setNeedsUpdate];
+        [self setNeedsUpdate:NO];
     }
 }
 
@@ -64,7 +68,7 @@
 - (void)setFillColor:(UIColor *)fillColor {
     if (_fillColor != fillColor) {
         _fillColor = fillColor;
-        [self setNeedsUpdate];
+        [self setNeedsUpdate:NO];
     }
 }
 
@@ -78,7 +82,7 @@
 - (void)setCurrentFillColor:(UIColor *)currentFillColor {
     if (_currentFillColor != currentFillColor) {
         _currentFillColor = currentFillColor;
-        [self setNeedsUpdate];
+        [self setNeedsUpdate:NO];
     }
 }
 
@@ -92,7 +96,7 @@
 - (void)setShape:(UIBezierPath *)shape {
     if (_shape != shape) {
         _shape = shape.copy;
-        [self setNeedsUpdate];
+        [self setNeedsUpdate:NO];
     }
 }
 
@@ -106,25 +110,30 @@
 - (void)setCurrentShape:(UIBezierPath *)currentShape {
     if (_currentShape != currentShape) {
         _currentShape = currentShape.copy;
-        [self setNeedsUpdate];
+        [self setNeedsUpdate:NO];
     }
 }
 
 - (void)setImage:(UIImage *)image {
     if (_image != image) {
         _image = image;
-        [self setNeedsUpdate];
+        [self setNeedsUpdate:NO];
     }
 }
 
-- (void)setCurrent:(BOOL)isCurrent {
+- (void)setCurrent:(BOOL)isCurrent animated:(BOOL)animated {
     if (_isCurrent != isCurrent) {
         _isCurrent = isCurrent;
-        [self setNeedsUpdate];
+        
+        // 更新样式
+        [self setNeedsUpdate:NO];
+        [self updateIfNeeded:animated];
+        // 重置进度
+        _transition = 0;
     }
 }
 
-- (void)setNeedsUpdate {
+- (void)setNeedsUpdate:(BOOL)animated {
     if (_needsUpdate) {
         return;
     }
@@ -132,32 +141,32 @@
     
     typeof(self) __weak wself = self;
     [NSRunLoop.mainRunLoop performInModes:@[NSRunLoopCommonModes] block:^{
-        [wself updateIfNeeded];
+        [wself updateIfNeeded:animated];
     }];
 }
 
-- (void)updateIfNeeded {
+- (void)updateIfNeeded:(BOOL)animated {
     if (!_needsUpdate) {
         return;
     }
     _needsUpdate = NO;
     
     if (self.isCurrent) {
-        if (self.currentImage == nil) {
-            [self updateAppearanceByUsingShape:self.currentShape fillColor:self.currentFillColor strokeColor:self.currentStrokeColor];
+        if (self.currentImage) {
+            [self updateWithImage:self.currentImage];
         } else {
-            [self updateAppearanceByUsingImage:self.currentImage];
+            [self updateWithShape:self.currentShape fillColor:self.currentFillColor strokeColor:self.currentStrokeColor animated:animated];
         }
     } else {
-        if (self.image == nil) {
-            [self updateAppearanceByUsingShape:self.shape fillColor:self.fillColor strokeColor:self.strokeColor];
+        if (self.image) {
+            [self updateWithImage:self.image];
         } else {
-            [self updateAppearanceByUsingImage:self.image];
+            [self updateWithShape:self.shape fillColor:self.fillColor strokeColor:self.strokeColor animated:animated];
         }
     }
 }
 
-- (void)updateAppearanceByUsingImage:(UIImage *)image {
+- (void)updateWithImage:(UIImage *)image {
     _shapeView.hidden = YES;
     
     if (_imageView == nil) {
@@ -167,17 +176,19 @@
     } else {
         _imageView.hidden = NO;
     }
+    
     _imageView.image = image;
     
     CGSize const size = [self intrinsicContentSizeForImage:image];
     _imageView.bounds = CGRectMake(0, 0, size.width, size.height);
 }
 
-- (void)updateAppearanceByUsingShape:(UIBezierPath *)shape fillColor:(UIColor *)fillColor strokeColor:(UIColor *)strokeColor {
+- (void)updateWithShape:(UIBezierPath *)shape fillColor:(UIColor *)fillColor strokeColor:(UIColor *)strokeColor animated:(BOOL)animated {
     _imageView.hidden = YES;
     
     if (_shapeView == nil) {
         _shapeView = [[XZShapeView alloc] initWithFrame:self.bounds];
+        _shapeView.layer.anchorPoint = CGPointMake(0.5, 0.5);
         _shapeView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin;
         [self addSubview:_shapeView];
     } else {
@@ -185,12 +196,41 @@
     }
     
     CGPathRef const path = shape.CGPath;
-    _shapeView.path        = path;
-    _shapeView.fillColor   = fillColor.CGColor;
-    _shapeView.strokeColor = strokeColor.CGColor;
-    
-    CGSize const size = [self intrinsicContentSizeForShape:path];
+    CGSize    const size = [self intrinsicContentSizeForShape:path];
     _shapeView.bounds = CGRectMake(0, 0, size.width, size.height);
+    
+    if (animated) {
+        if (_shapeView.layer.speed == 0) {
+            // 完成交互式转场的剩余进度
+            [UIView performWithoutAnimation:^{
+                self->_shapeView.path        = path;
+                self->_shapeView.fillColor   = fillColor.CGColor;
+                self->_shapeView.strokeColor = strokeColor.CGColor;
+            }];
+            CGFloat const offset = _shapeView.layer.timeOffset;
+            _shapeView.layer.speed = 1.0;
+            _shapeView.layer.beginTime = CACurrentMediaTime() - offset;
+            _shapeView.layer.timeOffset = 0;
+        } else {
+            [UIView animateWithDuration:XZPageControlAnimationDuration animations:^{
+                self->_shapeView.path        = path;
+                self->_shapeView.fillColor   = fillColor.CGColor;
+                self->_shapeView.strokeColor = strokeColor.CGColor;
+            }];
+        }
+    } else {
+        [UIView performWithoutAnimation:^{
+            self->_shapeView.path        = path;
+            self->_shapeView.fillColor   = fillColor.CGColor;
+            self->_shapeView.strokeColor = strokeColor.CGColor;
+        }];
+        if (_shapeView.layer.speed == 0) {
+            _shapeView.layer.speed = 1.0;
+            _shapeView.layer.beginTime = 0;
+            _shapeView.layer.timeOffset = 0;
+            [_shapeView.layer removeAllAnimations];
+        }
+    }
 }
 
 - (CGSize)intrinsicContentSizeForImage:(UIImage *)image {
@@ -213,5 +253,45 @@
     return CGSizeMake(width, height);
 }
 
-@end
+- (void)setTransition:(CGFloat)transition {
+    if (_transition != transition) {
+        _transition = transition;
+        
+        if (_image || _currentImage) {
+            return;
+        }
+        
+        if (_shapeView.layer.speed != 0) {
+            _shapeView.layer.speed = 0;
+            
+            CABasicAnimation *pathAnimation = [CABasicAnimation animationWithKeyPath:@"path"];
+            CABasicAnimation *fillColorAnimation = [CABasicAnimation animationWithKeyPath:@"fillColor"];
+            CABasicAnimation *strokeColorAnimation = [CABasicAnimation animationWithKeyPath:@"strokeColor"];
+            if (_isCurrent) {
+                pathAnimation.fromValue = (__bridge id _Nullable)(_currentShape.CGPath);
+                pathAnimation.toValue = (__bridge id)(_shape.CGPath);
+                fillColorAnimation.fromValue = (__bridge id _Nullable)(_currentFillColor.CGColor);
+                fillColorAnimation.toValue = (__bridge id _Nullable)(_fillColor.CGColor);
+                strokeColorAnimation.fromValue = (__bridge id _Nullable)(_currentStrokeColor.CGColor);
+                strokeColorAnimation.toValue = (__bridge id _Nullable)(_strokeColor.CGColor);
+            } else {
+                pathAnimation.fromValue = (__bridge id)(_shape.CGPath);
+                pathAnimation.toValue = (__bridge id _Nullable)(_currentShape.CGPath);
+                fillColorAnimation.fromValue = (__bridge id _Nullable)(_fillColor.CGColor);
+                fillColorAnimation.toValue = (__bridge id _Nullable)(_currentFillColor.CGColor);
+                strokeColorAnimation.fromValue = (__bridge id _Nullable)(_strokeColor.CGColor);
+                strokeColorAnimation.toValue = (__bridge id _Nullable)(_currentStrokeColor.CGColor);
+            }
+            
+            CAAnimationGroup *animation = [CAAnimationGroup animation];
+            animation.animations = @[pathAnimation, fillColorAnimation, strokeColorAnimation];
+            animation.duration = XZPageControlAnimationDuration;
+            animation.removedOnCompletion = YES;
+            [_shapeView.layer addAnimation:animation forKey:@"transition"];
+        }
+        
+        _shapeView.layer.timeOffset = transition * XZPageControlAnimationDuration;
+    }
+}
 
+@end
