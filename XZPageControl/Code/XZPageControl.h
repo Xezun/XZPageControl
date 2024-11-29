@@ -57,6 +57,8 @@ typedef NS_ENUM(NSInteger, XZPageControlOrientation) {
 /// 单页时是否隐藏，默认 YES 。
 @property (nonatomic) BOOL hidesForSinglePage;
 
+@property (nonatomic, assign) BOOL allowsContinuousInteraction;
+
 /// 指示器中心点之间的最大距离，默认 30 点。
 /// @discussion 如果此值足够大，指示器最多会平分整个视图宽度，此值将约束指示器之间的最大距离。
 /// @discussion 如果指示器视图不够宽或者此属性值不够大，指示器之间可能会发生重叠。
