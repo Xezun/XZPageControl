@@ -7,7 +7,7 @@
 
 #import "XZPageControl.h"
 #import "XZPageControlAttributes.h"
-#import "XZPageControlIndicatorItem.h"
+#import "XZPageControlIndicator.h"
 
 @interface XZPageControl ()
 @end
@@ -15,7 +15,7 @@
 @implementation XZPageControl {
     /// 记录指示器默认样式的对象。
     XZPageControlAttributes *_defaultAttributes;
-    NSMutableArray<XZPageControlIndicatorItem *> *_indicatorItems;
+    NSMutableArray<XZPageControlIndicator *> *_indicators;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame orientation:(XZPageControlOrientation)orientation {
@@ -52,7 +52,7 @@
     
     _hidesForSinglePage      = YES;
     _maximumIndicatorSpacing = 30.0;
-    _indicatorItems          = [NSMutableArray array];
+    _indicators              = [NSMutableArray array];
     _defaultAttributes       = nil;
     _currentPage             = 0;
 }
@@ -73,22 +73,36 @@
 
 // MARK: - Tracking
 
+- (BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event {
+    if (self.allowsContinuousInteraction) {
+        CGPoint    const point = [event.allTouches.anyObject locationInView:self];
+        NSUInteger const count = _indicators.count;
+        for (NSInteger i = 0; i < count; i++) {
+            if (CGRectContainsPoint(_indicators[i].frame, point)) {
+                [self XZPageControlSetCurrentPage:i animated:YES sendsEvents:YES];
+                break;
+            }
+        }
+    }
+    return [super continueTrackingWithTouch:touch withEvent:event];
+}
+
 - (void)endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event {
     [super endTrackingWithTouch:touch withEvent:event];
     
-    if (!self.isTouchInside || _indicatorItems.count < 2) {
+    if (!self.isTouchInside || _indicators.count < 2) {
         return;
     }
     
     CGPoint    const point = [touch locationInView:self];
-    NSUInteger const count = _indicatorItems.count;
+    NSUInteger const count = _indicators.count;
     
     switch (self.orientation) {
         case XZPageControlOrientationHorizontal: {
             BOOL const isLTR = self.effectiveUserInterfaceLayoutDirection == UIUserInterfaceLayoutDirectionLeftToRight;
             
             // 点击左边减小页数
-            if ( (isLTR && point.x < CGRectGetMinX(_indicatorItems.firstObject.frame)) || (!isLTR && point.x > CGRectGetMaxX(_indicatorItems.firstObject.frame)) ) {
+            if ( (isLTR && point.x < CGRectGetMinX(_indicators.firstObject.frame)) || (!isLTR && point.x > CGRectGetMaxX(_indicators.firstObject.frame)) ) {
                 if (_currentPage > 0) {
                     [self XZPageControlSetCurrentPage:_currentPage - 1 animated:YES sendsEvents:YES];
                 }
@@ -96,8 +110,8 @@
             }
             
             // 点击右边增加页数
-            if ( (isLTR && point.x > CGRectGetMaxX(_indicatorItems.lastObject.frame)) || (!isLTR && point.x < CGRectGetMinX(_indicatorItems.lastObject.frame)) ) {
-                if (_currentPage < _indicatorItems.count - 1) {
+            if ( (isLTR && point.x > CGRectGetMaxX(_indicators.lastObject.frame)) || (!isLTR && point.x < CGRectGetMinX(_indicators.lastObject.frame)) ) {
+                if (_currentPage < _indicators.count - 1) {
                     [self XZPageControlSetCurrentPage:_currentPage + 1 animated:YES sendsEvents:YES];
                 }
                 return;
@@ -106,7 +120,7 @@
         }
         case XZPageControlOrientationVertical: {
             // 点击上边减小页数
-            if ( point.y < CGRectGetMinY(_indicatorItems.firstObject.frame) ) {
+            if ( point.y < CGRectGetMinY(_indicators.firstObject.frame) ) {
                 if (_currentPage > 0) {
                     [self XZPageControlSetCurrentPage:_currentPage - 1 animated:YES sendsEvents:YES];
                 }
@@ -114,8 +128,8 @@
             }
             
             // 点击下边增加页数
-            if ( point.y > CGRectGetMaxY(_indicatorItems.lastObject.frame) ) {
-                if (_currentPage < _indicatorItems.count - 1) {
+            if ( point.y > CGRectGetMaxY(_indicators.lastObject.frame) ) {
+                if (_currentPage < _indicators.count - 1) {
                     [self XZPageControlSetCurrentPage:_currentPage + 1 animated:YES sendsEvents:YES];
                 }
                 return;
@@ -126,7 +140,7 @@
     
     // 点击了指定页面
     for (NSInteger i = 0; i < count; i++) {
-        if (CGRectContainsPoint(_indicatorItems[i].frame, point)) {
+        if (CGRectContainsPoint(_indicators[i].frame, point)) {
             [self XZPageControlSetCurrentPage:i animated:YES sendsEvents:YES];
             break;
         }
@@ -141,7 +155,7 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
 
-    NSUInteger const count = _indicatorItems.count;
+    NSUInteger const count = _indicators.count;
     if (count == 0) {
         return;
     }
@@ -170,14 +184,14 @@
             // 根据布局方向，逐个排列指示器。
             switch (self.effectiveUserInterfaceLayoutDirection) {
                 case UIUserInterfaceLayoutDirectionLeftToRight:
-                    [_indicatorItems enumerateObjectsUsingBlock:^(XZPageControlIndicatorItem *indicator, NSUInteger idx, BOOL *stop) {
+                    [_indicators enumerateObjectsUsingBlock:^(XZPageControlIndicator *indicator, NSUInteger idx, BOOL *stop) {
                         indicator.frame = CGRectMake(x, bounds.origin.y, width, bounds.size.height);
                         x += width;
                     }];
                     break;
                     
                 case UIUserInterfaceLayoutDirectionRightToLeft:
-                    [_indicatorItems enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(XZPageControlIndicatorItem *indicator, NSUInteger idx, BOOL *stop) {
+                    [_indicators enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(XZPageControlIndicator *indicator, NSUInteger idx, BOOL *stop) {
                         indicator.frame = CGRectMake(x, bounds.origin.y, width, bounds.size.height);
                         x += width;
                     }];
@@ -207,7 +221,7 @@
             }
             
             // 根据布局方向，逐个排列指示器。
-            [_indicatorItems enumerateObjectsUsingBlock:^(XZPageControlIndicatorItem *indicator, NSUInteger idx, BOOL *stop) {
+            [_indicators enumerateObjectsUsingBlock:^(XZPageControlIndicator *indicator, NSUInteger idx, BOOL *stop) {
                 indicator.frame = CGRectMake(bounds.origin.x, y, bounds.size.width, height);
                 y += height;
             }];
@@ -226,23 +240,24 @@
 }
 
 - (NSInteger)numberOfPages {
-    return _indicatorItems.count;
+    return _indicators.count;
 }
 
-- (void)setNumberOfPages:(NSInteger)numberOfPages {
-    if (_indicatorItems.count != numberOfPages) {
+- (void)setNumberOfPages:(NSInteger const)numberOfPages {
+    NSUInteger const count = _indicators.count;
+    if (count != numberOfPages) {
         if (numberOfPages == 0) {
             [self XZPageControlSetCurrentPage:0 animated:NO sendsEvents:NO];
-            [_indicatorItems removeAllObjects];
+            [_indicators removeAllObjects];
         } else {
             // 同步数量
-            for (NSInteger i = _indicatorItems.count; i < numberOfPages; i++) {
-                XZPageControlIndicatorItem *item = [XZPageControlIndicatorItem itemForPageControl:self attributes:_defaultAttributes.copy];
-                [item setCurrent:(i == _currentPage) animated:NO];
-                [_indicatorItems addObject:item];
+            for (NSInteger i = count; i < numberOfPages; i++) {
+                XZPageControlIndicator *indicator = [[XZPageControlIndicator alloc] initWithPageControl:self attributes:_defaultAttributes.copy];
+                [indicator setCurrent:(i == _currentPage) animated:NO];
+                [_indicators addObject:indicator];
             }
-            for (NSInteger i = _indicatorItems.count - 1; i >= numberOfPages; i--) {
-                [_indicatorItems removeObjectAtIndex:i];
+            for (NSInteger i = count - 1; i >= numberOfPages; i--) {
+                [_indicators removeObjectAtIndex:i];
             }
             
             // 修正当前指示器
@@ -262,7 +277,7 @@
 }
 
 - (void)setCurrentPage:(NSInteger)currentPage animated:(BOOL)animated {
-    NSParameterAssert(currentPage >= 0 && currentPage < _indicatorItems.count);
+    NSParameterAssert(currentPage >= 0 && currentPage < _indicators.count);
     [self XZPageControlSetCurrentPage:currentPage animated:animated sendsEvents:NO];
 }
 
@@ -271,27 +286,27 @@
 }
 
 - (void)setTransition:(CGFloat)transition isLooped:(BOOL)isLooped {
-    NSUInteger const numberOfPages = _indicatorItems.count;
+    NSUInteger const numberOfPages = _indicators.count;
     if (transition > 0) {
-        _indicatorItems[_currentPage].transition = transition;
+        _indicators[_currentPage].transition = transition;
         if (_currentPage < numberOfPages - 1) {
-            _indicatorItems[_currentPage + 1].transition = transition;
+            _indicators[_currentPage + 1].transition = transition;
         } else if (isLooped) {
-            _indicatorItems[0].transition = transition;
+            _indicators[0].transition = transition;
         }
     } else if (transition < 0) {
-        _indicatorItems[_currentPage].transition = -transition;
+        _indicators[_currentPage].transition = -transition;
         if (_currentPage > 0) {
-            _indicatorItems[_currentPage - 1].transition = -transition;
+            _indicators[_currentPage - 1].transition = -transition;
         } else if (isLooped) {
-            _indicatorItems[numberOfPages - 1].transition = -transition;
+            _indicators[numberOfPages - 1].transition = -transition;
         }
     }
 }
 
 - (CGFloat)transition {
-    if (_currentPage < _indicatorItems.count - 1) {
-        return _indicatorItems[_currentPage].transition;
+    if (_currentPage < _indicators.count - 1) {
+        return _indicators[_currentPage].transition;
     }
     return 0;
 }
@@ -300,7 +315,7 @@
     if (_hidesForSinglePage != hidesForSinglePage) {
         _hidesForSinglePage = hidesForSinglePage;
         
-        self.hidden = (_hidesForSinglePage && _indicatorItems.count <= 1);
+        self.hidden = (_hidesForSinglePage && _indicators.count <= 1);
     }
 }
 
@@ -319,7 +334,7 @@
 
 - (void)setIndicatorStrokeColor:(UIColor *)indicatorStrokeColor {
     self.defaultAttributes.strokeColor = indicatorStrokeColor;
-    for (XZPageControlIndicatorItem *indicator in _indicatorItems) {
+    for (XZPageControlIndicator *indicator in _indicators) {
         indicator.strokeColor = indicatorStrokeColor;
     }
 }
@@ -330,7 +345,7 @@
 
 - (void)setCurrentIndicatorStrokeColor:(UIColor *)currentIndicatorStrokeColor {
     self.defaultAttributes.currentStrokeColor = currentIndicatorStrokeColor;
-    for (XZPageControlIndicatorItem *indicator in _indicatorItems) {
+    for (XZPageControlIndicator *indicator in _indicators) {
         indicator.currentStrokeColor = currentIndicatorStrokeColor;
     }
 }
@@ -343,7 +358,7 @@
 
 - (void)setIndicatorFillColor:(UIColor *)indicatorFillColor {
     self.defaultAttributes.fillColor = indicatorFillColor;
-    for (XZPageControlIndicatorItem *indicator in _indicatorItems) {
+    for (XZPageControlIndicator *indicator in _indicators) {
         indicator.fillColor = indicatorFillColor;
     }
 }
@@ -354,7 +369,7 @@
 
 - (void)setCurrentIndicatorFillColor:(UIColor *)currentIndicatorFillColor {
     self.defaultAttributes.currentFillColor = currentIndicatorFillColor;
-    for (XZPageControlIndicatorItem *indicator in _indicatorItems) {
+    for (XZPageControlIndicator *indicator in _indicators) {
         indicator.currentFillColor = currentIndicatorFillColor;
     }
 }
@@ -367,7 +382,7 @@
 
 - (void)setIndicatorShape:(UIBezierPath *)indicatorShape {
     self.defaultAttributes.shape = indicatorShape;
-    for (XZPageControlIndicatorItem *indicator in _indicatorItems) {
+    for (XZPageControlIndicator *indicator in _indicators) {
         indicator.shape = indicatorShape;
     }
 }
@@ -378,7 +393,7 @@
 
 - (void)setCurrentIndicatorShape:(UIBezierPath *)currentIndicatorShape {
     self.defaultAttributes.currentShape = currentIndicatorShape;
-    for (XZPageControlIndicatorItem *indicator in _indicatorItems) {
+    for (XZPageControlIndicator *indicator in _indicators) {
         indicator.currentShape = currentIndicatorShape;
     }
 }
@@ -391,7 +406,7 @@
 
 - (void)setIndicatorImage:(UIImage *)indicatorImage {
     self.defaultAttributes.image = indicatorImage;
-    for (XZPageControlIndicatorItem *indicator in _indicatorItems) {
+    for (XZPageControlIndicator *indicator in _indicators) {
         indicator.image = indicatorImage;
     }
 }
@@ -402,7 +417,7 @@
 
 - (void)setCurrentIndicatorImage:(UIImage *)currentIndicatorImage {
     self.defaultAttributes.currentImage = currentIndicatorImage;
-    for (XZPageControlIndicatorItem *indicator in _indicatorItems) {
+    for (XZPageControlIndicator *indicator in _indicators) {
         indicator.currentImage = currentIndicatorImage;
     }
 }
@@ -410,95 +425,95 @@
 #pragma mark - 独立样式.StrokeColor
 
 - (UIColor *)indicatorStrokeColorForPage:(NSInteger)page {
-    return _indicatorItems[page].strokeColor;
+    return _indicators[page].strokeColor;
 }
 
 - (void)setIndicatorStrokeColor:(nullable UIColor *)indicatorColor forPage:(NSInteger)page {
-    _indicatorItems[page].strokeColor = indicatorColor;
+    _indicators[page].strokeColor = indicatorColor;
 }
 
 - (UIColor *)currentIndicatorStrokeColorForPage:(NSInteger)page {
-    return _indicatorItems[page].currentStrokeColor;
+    return _indicators[page].currentStrokeColor;
 }
 
 - (void)setCurrentIndicatorStrokeColor:(nullable UIColor *)currentIndicatorColor forPage:(NSInteger)page {
-    _indicatorItems[page].currentStrokeColor = currentIndicatorColor;
+    _indicators[page].currentStrokeColor = currentIndicatorColor;
 }
 
 #pragma mark - 独立样式.FillColor
 
 - (UIColor *)indicatorFillColorForPage:(NSInteger)page {
-    return _indicatorItems[page].fillColor;
+    return _indicators[page].fillColor;
 }
 
 - (void)setIndicatorFillColor:(UIColor *)indicatorColor forPage:(NSInteger)page {
-    _indicatorItems[page].fillColor = indicatorColor;
+    _indicators[page].fillColor = indicatorColor;
 }
 
 - (UIColor *)currentIndicatorFillColorForPage:(NSInteger)page {
-    return _indicatorItems[page].currentFillColor;
+    return _indicators[page].currentFillColor;
 }
 
 - (void)setCurrentIndicatorFillColor:(UIColor *)currentIndicatorColor forPage:(NSInteger)page {
-    _indicatorItems[page].currentFillColor = currentIndicatorColor;
+    _indicators[page].currentFillColor = currentIndicatorColor;
 }
 
 #pragma mark - 独立样式.Shape
 
 - (UIBezierPath *)indicatorShapeForPage:(NSInteger)page {
-    return _indicatorItems[page].shape;
+    return _indicators[page].shape;
 }
 
 - (void)setIndicatorShape:(UIBezierPath *)indicatorShape forPage:(NSInteger)page {
-    _indicatorItems[page].shape = indicatorShape;
+    _indicators[page].shape = indicatorShape;
 }
 
 - (UIBezierPath *)currentIndicatorShapeForPage:(NSInteger)page {
-    return _indicatorItems[page].currentShape;
+    return _indicators[page].currentShape;
 }
 
 - (void)setCurrentIndicatorShape:(UIBezierPath *)currentIndicatorShape forPage:(NSInteger)page {
-    _indicatorItems[page].currentShape = currentIndicatorShape;
+    _indicators[page].currentShape = currentIndicatorShape;
 }
 
 #pragma mark - 独立样式.Image
 
 - (UIImage *)indicatorImageForPage:(NSInteger)page {
-    return _indicatorItems[page].image;
+    return _indicators[page].image;
 }
 
 - (void)setIndicatorImage:(UIImage *)indicatorImage forPage:(NSInteger)page {
-    _indicatorItems[page].image = indicatorImage;
+    _indicators[page].image = indicatorImage;
 }
 
 - (UIImage *)currentIndicatorImageForPage:(NSInteger)page {
-    return _indicatorItems[page].currentImage;
+    return _indicators[page].currentImage;
 }
 
 - (void)setCurrentIndicatorImage:(UIImage *)currentIndicatorImage forPage:(NSInteger)page {
-    _indicatorItems[page].currentImage = currentIndicatorImage;
+    _indicators[page].currentImage = currentIndicatorImage;
 }
 
 #pragma mark - 自定义样式
 
 - (UIView<XZPageControlIndicator> *)indicatorForPage:(NSInteger)page {
-    return _indicatorItems[page].view;
+    return _indicators[page].view;
 }
 
 - (void)setIndicator:(UIView<XZPageControlIndicator> *)indicator forPage:(NSInteger)page {
-    _indicatorItems[page].view = indicator;
+    _indicators[page].view = indicator;
 }
 
 #pragma mark - Private Methods
 
 - (void)XZPageControlSetCurrentPage:(NSInteger)currentPage animated:(BOOL)animated sendsEvents:(BOOL)sendsEvents {
     if (_currentPage != currentPage) {
-        if (_currentPage < _indicatorItems.count) {
-            [_indicatorItems[_currentPage] setCurrent:NO animated:animated];
+        if (_currentPage < _indicators.count) {
+            [_indicators[_currentPage] setCurrent:NO animated:animated];
         }
         _currentPage = currentPage;
-        if (_currentPage < _indicatorItems.count) {
-            [_indicatorItems[_currentPage] setCurrent:YES animated:animated];
+        if (_currentPage < _indicators.count) {
+            [_indicators[_currentPage] setCurrent:YES animated:animated];
         }
         if (sendsEvents) {
             [self sendActionsForControlEvents:(UIControlEventValueChanged)];

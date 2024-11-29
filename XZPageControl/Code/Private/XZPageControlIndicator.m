@@ -6,291 +6,225 @@
 //
 
 #import "XZPageControlIndicator.h"
-#import <XZShapeView/XZShapeView.h>
+#import "XZPageControl.h"
+#import "XZPageControlIndicatorView.h"
 
-#define XZPageControlAnimationDuration 0.35
+@interface XZPageControlIndicator () {
+    XZPageControl * __unsafe_unretained _pageControl;
+}
+@end
 
-@implementation XZPageControlIndicator {
-    // _imageView 与 _shapeView 并非完全互斥，
-    // 因为可以在 isCurrent 两种状态之间分别选择其中一种样式，用来展示。
-    UIImageView *_imageView;
-    XZShapeView *_shapeView;
-    BOOL _needsUpdate;
+@implementation XZPageControlIndicator
+
+- (void)dealloc {
+    [_view removeFromSuperview];
 }
 
-@synthesize isCurrent = _isCurrent;
-
-@synthesize transition = _transition;
-
-@synthesize fillColor = _fillColor;
-@synthesize currentFillColor = _currentFillColor;
-
-@synthesize strokeColor = _strokeColor;
-@synthesize currentStrokeColor = _currentStrokeColor;
-
-@synthesize shape = _shape;
-@synthesize currentShape = _currentShape;
-
-@synthesize image = _image;
-@synthesize currentImage = _currentImage;
-
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
+- (instancetype)initWithPageControl:(XZPageControl *)pageControl attributes:(XZPageControlAttributes *)attributes {
+    self = [super init];
     if (self) {
-        self.userInteractionEnabled = NO;
-        _needsUpdate = NO;
-        [self setNeedsUpdate:NO];
+        _view = nil;
+        _isCurrent = NO;
+        _attributes = attributes;
+        _pageControl = pageControl;
     }
     return self;
 }
 
-- (void)setStrokeColor:(UIColor *)strokeColor {
-    if (_strokeColor != strokeColor) {
-        _strokeColor = strokeColor;
-        [self setNeedsUpdate:NO];
+@synthesize attributes = _attributes;
+
+- (XZPageControlAttributes *)attributes {
+    if (_attributes == nil) {
+        _attributes = [[XZPageControlAttributes alloc] init];
+    }
+    return _attributes;
+}
+
+@synthesize view = _view;
+
+- (void)setView:(UIView<XZPageControlIndicator> *)view {
+    if (_view != view) {
+        [_view removeFromSuperview];
+        _view = view;
+        if (_view) {
+            [self viewDidLoad];
+        }
     }
 }
 
-- (void)setCurrentStrokeColor:(UIColor *)currentStrokeColor {
-    if (_currentStrokeColor != currentStrokeColor) {
-        _currentStrokeColor = currentStrokeColor;
-        [self setNeedsUpdate:NO];
+- (UIView<XZPageControlIndicator> *)view {
+    if (!_view) {
+        _view = [[XZPageControlIndicatorView alloc] init];
+        [self viewDidLoad];
     }
+    return _view;
 }
 
-- (UIColor *)fillColor {
-    if (_fillColor == nil) {
-        _fillColor = UIColor.grayColor;
+- (void)viewDidLoad {
+    [_pageControl addSubview:_view];
+    
+    // 复制属性
+    if (_attributes.strokeColor) {
+        if ([_view respondsToSelector:@selector(setStrokeColor:)]) {
+            _view.strokeColor = _attributes.strokeColor;
+        }
     }
-    return _fillColor;
+    if (_attributes.currentStrokeColor) {
+        if ([_view respondsToSelector:@selector(setCurrentStrokeColor:)]) {
+            _view.currentStrokeColor = _attributes.currentStrokeColor;
+        }
+    }
+    
+    if (_attributes.fillColor) {
+        if ([_view respondsToSelector:@selector(setFillColor:)]) {
+            _view.fillColor = _attributes.fillColor;
+        }
+    }
+    if (_attributes.currentFillColor) {
+        if ([_view respondsToSelector:@selector(setCurrentFillColor:)]) {
+            _view.currentFillColor = _attributes.currentFillColor;
+        }
+    }
+    
+    if (_attributes.shape) {
+        if ([_view respondsToSelector:@selector(setShape:)]) {
+            _view.shape = _attributes.shape;
+        }
+    }
+    if (_attributes.currentShape) {
+        if ([_view respondsToSelector:@selector(setCurrentShape:)]) {
+            _view.currentShape = _attributes.currentShape;
+        }
+    }
+    
+    if (_attributes.image) {
+        if ([_view respondsToSelector:@selector(setImage:)]) {
+            _view.image = _attributes.image;
+        }
+    }
+    if (_attributes.currentImage) {
+        if ([_view respondsToSelector:@selector(setCurrentImage:)]) {
+            _view.currentImage = _attributes.currentImage;
+        }
+    }
+    
+    [_view setCurrent:_isCurrent animated:NO];
 }
 
-- (void)setFillColor:(UIColor *)fillColor {
-    if (_fillColor != fillColor) {
-        _fillColor = fillColor;
-        [self setNeedsUpdate:NO];
-    }
+- (CGRect)frame {
+    return _view.frame;
 }
 
-- (UIColor *)currentFillColor {
-    if (_currentFillColor == nil) {
-        _currentFillColor = UIColor.whiteColor;
-    }
-    return _currentFillColor;
+- (void)setFrame:(CGRect)frame {
+    self.view.frame = frame;
 }
 
-- (void)setCurrentFillColor:(UIColor *)currentFillColor {
-    if (_currentFillColor != currentFillColor) {
-        _currentFillColor = currentFillColor;
-        [self setNeedsUpdate:NO];
-    }
-}
-
-- (UIBezierPath *)shape {
-    if (_shape == nil) {
-        _shape = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(0, 0, 6.0, 6.0)];
-    }
-    return _shape;
-}
-
-- (void)setShape:(UIBezierPath *)shape {
-    if (_shape != shape) {
-        _shape = shape.copy;
-        [self setNeedsUpdate:NO];
-    }
-}
-
-- (UIBezierPath *)currentShape {
-    if (_currentShape == nil) {
-        _currentShape = self.shape;
-    }
-    return _currentShape;
-}
-
-- (void)setCurrentShape:(UIBezierPath *)currentShape {
-    if (_currentShape != currentShape) {
-        _currentShape = currentShape.copy;
-        [self setNeedsUpdate:NO];
-    }
-}
-
-- (void)setImage:(UIImage *)image {
-    if (_image != image) {
-        _image = image;
-        [self setNeedsUpdate:NO];
-    }
-}
+@synthesize isCurrent = _isCurrent;
 
 - (void)setCurrent:(BOOL)isCurrent animated:(BOOL)animated {
     if (_isCurrent != isCurrent) {
         _isCurrent = isCurrent;
-        
-        // 更新样式
-        [self setNeedsUpdate:NO];
-        [self updateIfNeeded:animated];
-        // 重置进度
-        _transition = 0;
+        [_view setCurrent:isCurrent animated:animated];
     }
 }
 
-- (void)setNeedsUpdate:(BOOL)animated {
-    if (_needsUpdate) {
-        return;
-    }
-    _needsUpdate = YES;
-    
-    typeof(self) __weak wself = self;
-    [NSRunLoop.mainRunLoop performInModes:@[NSRunLoopCommonModes] block:^{
-        [wself updateIfNeeded:animated];
-    }];
-}
-
-- (void)updateIfNeeded:(BOOL)animated {
-    if (!_needsUpdate) {
-        return;
-    }
-    _needsUpdate = NO;
-    
-    if (self.isCurrent) {
-        if (self.currentImage) {
-            [self updateWithImage:self.currentImage];
-        } else {
-            [self updateWithShape:self.currentShape fillColor:self.currentFillColor strokeColor:self.currentStrokeColor animated:animated];
-        }
-    } else {
-        if (self.image) {
-            [self updateWithImage:self.image];
-        } else {
-            [self updateWithShape:self.shape fillColor:self.fillColor strokeColor:self.strokeColor animated:animated];
-        }
-    }
-}
-
-- (void)updateWithImage:(UIImage *)image {
-    _shapeView.hidden = YES;
-    
-    if (_imageView == nil) {
-        _imageView = [[UIImageView alloc] initWithFrame:self.bounds];
-        _imageView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin;
-        [self addSubview:_imageView];
-    } else {
-        _imageView.hidden = NO;
-    }
-    
-    _imageView.image = image;
-    
-    CGSize const size = [self intrinsicContentSizeForImage:image];
-    _imageView.bounds = CGRectMake(0, 0, size.width, size.height);
-}
-
-- (void)updateWithShape:(UIBezierPath *)shape fillColor:(UIColor *)fillColor strokeColor:(UIColor *)strokeColor animated:(BOOL)animated {
-    _imageView.hidden = YES;
-    
-    if (_shapeView == nil) {
-        _shapeView = [[XZShapeView alloc] initWithFrame:self.bounds];
-        _shapeView.layer.anchorPoint = CGPointMake(0.5, 0.5);
-        _shapeView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin;
-        [self addSubview:_shapeView];
-    } else {
-        _shapeView.hidden = NO;
-    }
-    
-    CGPathRef const path = shape.CGPath;
-    CGSize    const size = [self intrinsicContentSizeForShape:path];
-    _shapeView.bounds = CGRectMake(0, 0, size.width, size.height);
-    
-    if (animated) {
-        if (_shapeView.layer.speed == 0) {
-            // 完成交互式转场的剩余进度
-            [UIView performWithoutAnimation:^{
-                self->_shapeView.path        = path;
-                self->_shapeView.fillColor   = fillColor.CGColor;
-                self->_shapeView.strokeColor = strokeColor.CGColor;
-            }];
-            CGFloat const offset = _shapeView.layer.timeOffset;
-            _shapeView.layer.speed = 1.0;
-            _shapeView.layer.beginTime = CACurrentMediaTime() - offset;
-            _shapeView.layer.timeOffset = 0;
-        } else {
-            [UIView animateWithDuration:XZPageControlAnimationDuration animations:^{
-                self->_shapeView.path        = path;
-                self->_shapeView.fillColor   = fillColor.CGColor;
-                self->_shapeView.strokeColor = strokeColor.CGColor;
-            }];
-        }
-    } else {
-        [UIView performWithoutAnimation:^{
-            self->_shapeView.path        = path;
-            self->_shapeView.fillColor   = fillColor.CGColor;
-            self->_shapeView.strokeColor = strokeColor.CGColor;
-        }];
-        if (_shapeView.layer.speed == 0) {
-            _shapeView.layer.speed = 1.0;
-            _shapeView.layer.beginTime = 0;
-            _shapeView.layer.timeOffset = 0;
-            [_shapeView.layer removeAllAnimations];
-        }
-    }
-}
-
-- (CGSize)intrinsicContentSizeForImage:(UIImage *)image {
-    CGSize  const size        = image.size;
-    CGFloat const screenScale = UIScreen.mainScreen.scale;
-    CGFloat const imageScale  = image.scale;
-    
-    if (imageScale == screenScale || imageScale <= 0) {
-        return size;
-    }
-    
-    CGFloat const scale = imageScale / screenScale;
-    return CGSizeMake(size.width * scale, size.height * scale);
-}
-
-- (CGSize)intrinsicContentSizeForShape:(CGPathRef)shape {
-    CGRect  const bounds = CGPathGetPathBoundingBox(shape);
-    CGFloat const width  = bounds.size.width + bounds.origin.x * 2.0;
-    CGFloat const height = bounds.size.height + bounds.origin.y * 2.0;
-    return CGSizeMake(width, height);
+- (BOOL)isCurrent {
+    return _isCurrent;
 }
 
 - (void)setTransition:(CGFloat)transition {
-    if (_transition != transition) {
-        _transition = transition;
-        
-        if (_image || _currentImage) {
-            return;
-        }
-        
-        if (_shapeView.layer.speed != 0) {
-            _shapeView.layer.speed = 0;
-            
-            CABasicAnimation *pathAnimation = [CABasicAnimation animationWithKeyPath:@"path"];
-            CABasicAnimation *fillColorAnimation = [CABasicAnimation animationWithKeyPath:@"fillColor"];
-            CABasicAnimation *strokeColorAnimation = [CABasicAnimation animationWithKeyPath:@"strokeColor"];
-            if (_isCurrent) {
-                pathAnimation.fromValue = (__bridge id _Nullable)(_currentShape.CGPath);
-                pathAnimation.toValue = (__bridge id)(_shape.CGPath);
-                fillColorAnimation.fromValue = (__bridge id _Nullable)(_currentFillColor.CGColor);
-                fillColorAnimation.toValue = (__bridge id _Nullable)(_fillColor.CGColor);
-                strokeColorAnimation.fromValue = (__bridge id _Nullable)(_currentStrokeColor.CGColor);
-                strokeColorAnimation.toValue = (__bridge id _Nullable)(_strokeColor.CGColor);
-            } else {
-                pathAnimation.fromValue = (__bridge id)(_shape.CGPath);
-                pathAnimation.toValue = (__bridge id _Nullable)(_currentShape.CGPath);
-                fillColorAnimation.fromValue = (__bridge id _Nullable)(_fillColor.CGColor);
-                fillColorAnimation.toValue = (__bridge id _Nullable)(_currentFillColor.CGColor);
-                strokeColorAnimation.fromValue = (__bridge id _Nullable)(_strokeColor.CGColor);
-                strokeColorAnimation.toValue = (__bridge id _Nullable)(_currentStrokeColor.CGColor);
-            }
-            
-            CAAnimationGroup *animation = [CAAnimationGroup animation];
-            animation.animations = @[pathAnimation, fillColorAnimation, strokeColorAnimation];
-            animation.duration = XZPageControlAnimationDuration;
-            animation.removedOnCompletion = YES;
-            [_shapeView.layer addAnimation:animation forKey:@"transition"];
-        }
-        
-        _shapeView.layer.timeOffset = transition * XZPageControlAnimationDuration;
+    [self.view setTransition:transition];
+}
+
+- (CGFloat)transition {
+    return _view.transition;
+}
+
+- (UIColor *)strokeColor {
+    return _attributes.strokeColor;
+}
+
+- (void)setStrokeColor:(UIColor *)strokeColor {
+    self.attributes.strokeColor = strokeColor;
+    if ([_view respondsToSelector:@selector(setStrokeColor:)]) {
+        _view.strokeColor = strokeColor;
+    }
+}
+
+- (UIColor *)currentStrokeColor {
+    return _attributes.currentStrokeColor;
+}
+
+- (void)setCurrentStrokeColor:(UIColor *)currentStrokeColor {
+    self.attributes.currentStrokeColor = currentStrokeColor;
+    if ([_view respondsToSelector:@selector(setCurrentStrokeColor:)]) {
+        _view.currentStrokeColor = currentStrokeColor;
+    }
+}
+
+- (UIColor *)fillColor {
+    return _attributes.fillColor;
+}
+
+- (void)setFillColor:(UIColor *)fillColor {
+    self.attributes.fillColor = fillColor;
+    if ([_view respondsToSelector:@selector(setFillColor:)]) {
+        _view.fillColor = fillColor;
+    }
+}
+
+- (UIColor *)currentFillColor {
+    return _attributes.currentFillColor;
+}
+
+- (void)setCurrentFillColor:(UIColor *)currentFillColor {
+    self.attributes.currentFillColor = currentFillColor;
+    if ([_view respondsToSelector:@selector(setCurrentFillColor:)]) {
+        _view.currentFillColor = currentFillColor;
+    }
+}
+
+- (UIBezierPath *)shape {
+    return _attributes.shape;
+}
+
+- (void)setShape:(UIBezierPath *)shape {
+    self.attributes.shape = shape;
+    if ([_view respondsToSelector:@selector(setShape:)]) {
+        _view.shape = shape;
+    }
+}
+
+- (UIBezierPath *)currentShape {
+    return _attributes.currentShape;
+}
+
+- (void)setCurrentShape:(UIBezierPath *)currentShape {
+    self.attributes.currentShape = currentShape;
+    if ([_view respondsToSelector:@selector(setCurrentShape:)]) {
+        _view.currentShape = currentShape;
+    }
+}
+
+- (UIImage *)image {
+    return _attributes.image;
+}
+
+- (void)setImage:(UIImage *)image {
+    self.attributes.image = image;
+    if ([_view respondsToSelector:@selector(setImage:)]) {
+        _view.image = image;
+    }
+}
+
+- (UIImage *)currentImage {
+    return _attributes.currentImage;
+}
+
+- (void)setCurrentImage:(UIImage *)currentImage {
+    self.attributes.currentImage = currentImage;
+    if ([_view respondsToSelector:@selector(setCurrentImage:)]) {
+        _view.currentImage = currentImage;
     }
 }
 
